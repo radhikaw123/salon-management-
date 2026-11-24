@@ -2,8 +2,8 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { ReceptionTabParamList } from './types';
-import { colors, typography } from '@/shared/theme';
-import { useAuthStore } from '@/shared/store/authStore';
+import { colors, typography } from '../shared/theme';
+import { useAuthStore } from '../shared/store/authStore';
 
 const Tab = createBottomTabNavigator<ReceptionTabParamList>();
 

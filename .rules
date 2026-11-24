@@ -1,0 +1,4 @@
+# Rule: Simplicity First
+- Do not write a high level or overly complex code.
+- Keep implementation clean, direct, and easy to understand.
+- If high-level abstractions or complex patterns are needed, ask the user first before writing.

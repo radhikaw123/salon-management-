@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { colors, spacing, typography, borderRadius } from '@/shared/theme';
-import { useAuthStore } from '@/shared/store/authStore';
+import { colors, spacing, typography, borderRadius } from '../../../shared/theme';
+import { useAuthStore } from '../../../shared/store/authStore';
 
 export const LoginScreen = () => {
   const setAuth = useAuthStore((s) => s.setAuth);

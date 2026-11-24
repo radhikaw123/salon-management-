@@ -1,3 +1,11 @@
-import App from './src/app/App';
+import React from 'react';
+import { AppProviders } from './src/providers/AppProviders';
+import { RootNavigator } from './src/navigation/RootNavigator';
 
-export default App;
+export default function App() {
+  return (
+    <AppProviders>
+      <RootNavigator />
+    </AppProviders>
+  );
+}

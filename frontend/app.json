@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "SalonHub",
+    "name": "Salonova",
     "slug": "salon-management-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,11 +16,11 @@
       "bundleIdentifier": "com.salonhub.app"
     },
     "android": {
+      "package": "com.salonhub.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1E1E24"
-      },
-      "package": "com.salonhub.app"
+      }
     },
     "plugins": [
       "expo-secure-store"

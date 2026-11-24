@@ -1,79 +1,84 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet, Button } from 'react-native';
-import { OwnerTabParamList } from './types';
-import { colors, typography } from '@/shared/theme';
-import { useAuthStore } from '@/shared/store/authStore';
+import { View, StyleSheet, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, radius, spacing } from '../shared/theme';
+import { DashboardScreen } from '../features/analytics/screens/DashboardScreen';
+import { ServicesScreen } from '../features/services/screens/ServicesScreen';
+import { StaffScreen } from '../features/staff/screens/StaffScreen';
+import { FinanceScreen } from '../features/analytics/screens/FinanceScreen';
 
-const Tab = createBottomTabNavigator<OwnerTabParamList>();
-
-const PlaceholderScreen = ({ title }: { title: string }) => {
-  const logout = useAuthStore((s) => s.logout);
-  return (
-    <View style={styles.center}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.meta}>Owner Role: Full Analytics & Configuration Access</Text>
-      <Button title="Logout" onPress={logout} color={colors.primary} />
-    </View>
-  );
-};
+const Tab = createBottomTabNavigator();
 
 export const OwnerNavigator = () => {
   return (
     <Tab.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textSecondary,
-        headerStyle: { backgroundColor: colors.surfaceDark },
-        headerTintColor: colors.textInverse,
-      }}
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarActiveTintColor: colors.white,
+        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.45)',
+        tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.tabBarLabel,
+        tabBarIcon: ({ color, focused }) => {
+          let iconName: keyof typeof Ionicons.glyphMap = 'grid-outline';
+
+          if (route.name === 'Dashboard') {
+            iconName = focused ? 'grid' : 'grid-outline';
+          } else if (route.name === 'Services') {
+            iconName = focused ? 'cut' : 'cut-outline';
+          } else if (route.name === 'Staff') {
+            iconName = focused ? 'people' : 'people-outline';
+          } else if (route.name === 'Finance') {
+            iconName = focused ? 'wallet' : 'wallet-outline';
+          }
+
+          return (
+            <View style={[styles.iconWrapper, focused && styles.iconWrapperActive]}>
+              <Ionicons name={iconName} size={18} color={color} />
+            </View>
+          );
+        },
+      })}
     >
-      <Tab.Screen
-        name="OwnerDashboard"
-        component={() => <PlaceholderScreen title="Owner Dashboard & Real-Time KPIs" />}
-        options={{ title: 'Dashboard' }}
-      />
-      <Tab.Screen
-        name="OwnerCalendar"
-        component={() => <PlaceholderScreen title="All Stylists Master Schedule" />}
-        options={{ title: 'Calendar' }}
-      />
-      <Tab.Screen
-        name="OwnerStaff"
-        component={() => <PlaceholderScreen title="Staff Roster & Commission Config" />}
-        options={{ title: 'Staff' }}
-      />
-      <Tab.Screen
-        name="OwnerInventory"
-        component={() => <PlaceholderScreen title="Inventory & Supplier Orders" />}
-        options={{ title: 'Inventory' }}
-      />
-      <Tab.Screen
-        name="OwnerReports"
-        component={() => <PlaceholderScreen title="Revenue & Financial Reports" />}
-        options={{ title: 'Reports' }}
-      />
+      <Tab.Screen name="Dashboard" component={DashboardScreen} />
+      <Tab.Screen name="Services" component={ServicesScreen} />
+      <Tab.Screen name="Staff" component={StaffScreen} />
+      <Tab.Screen name="Finance" component={FinanceScreen} />
     </Tab.Navigator>
   );
 };
 
 const styles = StyleSheet.create({
-  center: {
-    flex: 1,
+  tabBar: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 24 : 16,
+    left: 20,
+    right: 20,
+    height: 64,
+    borderRadius: radius.pill,
+    backgroundColor: colors.plumDeep,
+    borderTopWidth: 0,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    paddingBottom: 6,
+    paddingTop: 6,
+  },
+  tabBarLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  iconWrapper: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: colors.background,
   },
-  title: {
-    ...typography.h2,
-    color: colors.textPrimary,
-    marginBottom: 8,
-  },
-  meta: {
-    ...typography.body,
-    color: colors.textSecondary,
-    marginBottom: 24,
-    textAlign: 'center',
+  iconWrapperActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
   },
 });
