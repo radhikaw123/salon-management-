@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "SalonHub",
+    "slug": "salon-management-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1E1E24"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.salonhub.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1E1E24"
+      },
+      "package": "com.salonhub.app"
+    },
+    "plugins": [
+      "expo-secure-store"
+    ],
+    "extra": {
+      "apiUrl": "http://10.0.2.2:5000/v1"
+    }
+  }
+}
