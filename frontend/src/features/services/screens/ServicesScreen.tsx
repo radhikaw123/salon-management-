@@ -9,6 +9,7 @@ import {
   Image,
   Modal,
   Switch,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius, typography } from '../../../shared/theme';
@@ -21,60 +22,146 @@ import {
   formatRupee,
 } from '../../../shared/api/mockData';
 
+const CATEGORY_COLORS = [
+  '#E09F8F', // Coral Peach
+  '#A9BEA9', // Sage Green
+  '#C8B6CD', // Lavender Lilac
+  '#D2BE98', // Sand Gold
+  '#A4BCC7', // Powder Blue
+  '#EABFA2', // Soft Apricot
+];
+
+const CATEGORY_ICONS: Array<keyof typeof Ionicons.glyphMap> = [
+  'cut-outline',
+  'sparkles-outline',
+  'brush-outline',
+  'color-palette-outline',
+  'flower-outline',
+];
+
 export const ServicesScreen = () => {
   const [activeSegment, setActiveSegment] = useState<'categories' | 'serviceList'>('categories');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<ServiceCategory[]>(mockCategories);
   const [services, setServices] = useState<ServiceItem[]>(mockServicesList);
 
-  // Modals state
-  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
-  const [isNewServiceOpen, setIsNewServiceOpen] = useState(false);
+  // Category Modal State (Add or Edit)
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<ServiceCategory | null>(null);
+  const [catName, setCatName] = useState('');
+  const [catDesc, setCatDesc] = useState('');
+  const [selectedIconIndex, setSelectedIconIndex] = useState(0);
+  const [selectedColor, setSelectedColor] = useState(CATEGORY_COLORS[0]);
+
+  // Service Modal State (Add or Edit)
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<ServiceItem | null>(null);
-
-  // New Category Form state
-  const [newCatName, setNewCatName] = useState('');
-  const [newCatDesc, setNewCatDesc] = useState('');
-
-  // Service Form state
   const [serviceName, setServiceName] = useState('');
+  const [serviceCategory, setServiceCategory] = useState('Hair');
   const [servicePrice, setServicePrice] = useState('');
-  const [serviceDuration, setServiceDuration] = useState('60');
+  const [serviceDuration, setServiceDuration] = useState('60m');
+  const [serviceDesc, setServiceDesc] = useState('');
   const [isPopular, setIsPopular] = useState(true);
 
-  const handleOpenEditService = (service: ServiceItem) => {
-    setEditingService(service);
-    setServiceName(service.name);
-    setServicePrice(service.price.toString());
-    setServiceDuration(service.duration);
-    setIsPopular(!!service.popular);
+  // Open Edit Category Modal
+  const handleOpenEditCategory = (category: ServiceCategory) => {
+    setEditingCategory(category);
+    setCatName(category.name);
+    setCatDesc('');
+    setSelectedIconIndex(category.name.includes('Hair') ? 0 : category.name.includes('Skin') ? 1 : 2);
+    setSelectedColor(CATEGORY_COLORS[0]);
+    setIsCategoryModalOpen(true);
   };
 
-  const handleAddCategory = () => {
-    if (newCatName.trim()) {
+  // Open Add Category Modal
+  const handleOpenAddCategory = () => {
+    setEditingCategory(null);
+    setCatName('');
+    setCatDesc('');
+    setSelectedIconIndex(0);
+    setSelectedColor(CATEGORY_COLORS[0]);
+    setIsCategoryModalOpen(true);
+  };
+
+  // Save Category (Create or Update)
+  const handleSaveCategory = () => {
+    if (!catName.trim()) return;
+
+    if (editingCategory) {
+      // Update existing
+      setCategories(
+        categories.map((c) =>
+          c.id === editingCategory.id
+            ? { ...c, name: catName.trim() }
+            : c
+        )
+      );
+    } else {
+      // Create new
       setCategories([
         ...categories,
         {
           id: `cat_${Date.now()}`,
-          name: newCatName.trim(),
+          name: catName.trim(),
           serviceCount: 0,
-          imageUrl: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=500',
+          imageUrl: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=500&auto=format&fit=crop&q=60',
         },
       ]);
-      setNewCatName('');
-      setNewCatDesc('');
-      setIsAddCategoryOpen(false);
     }
+    setIsCategoryModalOpen(false);
+    setEditingCategory(null);
   };
 
+  // Delete Category
+  const handleDeleteCategory = (id: string) => {
+    setCategories(categories.filter((c) => c.id !== id));
+    setIsCategoryModalOpen(false);
+    setEditingCategory(null);
+  };
+
+  // Click on a Category Card -> Switch to Service List and filter by that category
+  const handleCategoryCardPress = (categoryName: string) => {
+    setSelectedCategoryFilter(categoryName);
+    setActiveSegment('serviceList');
+  };
+
+  // Open Edit Service Modal
+  const handleOpenEditService = (service: ServiceItem) => {
+    setEditingService(service);
+    setServiceName(service.name);
+    setServiceCategory(service.category);
+    setServicePrice(service.price.toString());
+    setServiceDuration(service.duration);
+    setServiceDesc('');
+    setIsPopular(!!service.popular);
+    setIsServiceModalOpen(true);
+  };
+
+  // Open Add Service Modal
+  const handleOpenAddService = () => {
+    setEditingService(null);
+    setServiceName('');
+    setServiceCategory(selectedCategoryFilter || 'Hair');
+    setServicePrice('2500');
+    setServiceDuration('1h');
+    setServiceDesc('');
+    setIsPopular(true);
+    setIsServiceModalOpen(true);
+  };
+
+  // Save Service (Create or Update)
   const handleSaveService = () => {
+    if (!serviceName.trim()) return;
+
     if (editingService) {
       setServices(
         services.map((s) =>
           s.id === editingService.id
             ? {
                 ...s,
-                name: serviceName,
+                name: serviceName.trim(),
+                category: serviceCategory,
                 price: Number(servicePrice) || s.price,
                 duration: serviceDuration,
                 popular: isPopular,
@@ -82,27 +169,45 @@ export const ServicesScreen = () => {
             : s
         )
       );
-      setEditingService(null);
-    } else if (serviceName.trim()) {
+    } else {
       setServices([
         ...services,
         {
           id: `srv_${Date.now()}`,
           name: serviceName.trim(),
-          category: 'Hair',
-          duration: `${serviceDuration}m`,
+          category: serviceCategory,
+          duration: serviceDuration,
           price: Number(servicePrice) || 2000,
           popular: isPopular,
         },
       ]);
-      setIsNewServiceOpen(false);
     }
+    setIsServiceModalOpen(false);
+    setEditingService(null);
   };
 
-  const filteredServices = services.filter((s) =>
-    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Delete Service
+  const handleDeleteService = (id: string) => {
+    setServices(services.filter((s) => s.id !== id));
+    setIsServiceModalOpen(false);
+    setEditingService(null);
+  };
+
+  // Filter Services by Category and Search Text
+  const filteredServices = services.filter((s) => {
+    const matchesCategory =
+      !selectedCategoryFilter || selectedCategoryFilter === 'All'
+        ? true
+        : s.category.toLowerCase() === selectedCategoryFilter.toLowerCase();
+
+    const matchesSearch =
+      searchQuery.trim() === ''
+        ? true
+        : s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          s.category.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <View style={styles.screen}>
@@ -110,8 +215,8 @@ export const ServicesScreen = () => {
         rightActionIcon="add-outline"
         onRightActionPress={() =>
           activeSegment === 'categories'
-            ? setIsAddCategoryOpen(true)
-            : setIsNewServiceOpen(true)
+            ? handleOpenAddCategory()
+            : handleOpenAddService()
         }
       />
 
@@ -127,7 +232,7 @@ export const ServicesScreen = () => {
           </Text>
         </View>
 
-        {/* Segmented Control */}
+        {/* Segmented Control: Categories vs Service list */}
         <View style={styles.segmentedContainer}>
           <TouchableOpacity
             style={[
@@ -166,7 +271,9 @@ export const ServicesScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* 1. Categories View */}
+        {/* ============================================================ */}
+        {/* VIEW 1: CATEGORIES GRID                                      */}
+        {/* ============================================================ */}
         {activeSegment === 'categories' ? (
           <View>
             <View style={styles.sectionHeaderRow}>
@@ -179,36 +286,54 @@ export const ServicesScreen = () => {
 
             {/* 2-Column Categories Grid */}
             <View style={styles.categoryGrid}>
-              {categories.map((cat) => (
-                <View key={cat.id} style={styles.categoryCard}>
-                  <Image source={{ uri: cat.imageUrl }} style={styles.categoryImage} />
-                  <View style={styles.categoryOverlay}>
-                    <View style={styles.categoryHeader}>
-                      <TouchableOpacity
-                        style={styles.actionIconPill}
-                        onPress={() => setIsNewServiceOpen(true)}
-                      >
-                        <Ionicons name="pencil" size={12} color={colors.plumDeep} />
-                      </TouchableOpacity>
-                      <View style={styles.categoryCountBadge}>
-                        <Text style={styles.categoryCountText}>
-                          {cat.serviceCount}
+              {categories.map((cat) => {
+                const count = services.filter((s) => s.category.toLowerCase() === cat.name.toLowerCase()).length;
+                return (
+                  <TouchableOpacity
+                    key={cat.id}
+                    style={styles.categoryCard}
+                    activeOpacity={0.88}
+                    onPress={() => handleCategoryCardPress(cat.name)}
+                  >
+                    <Image source={{ uri: cat.imageUrl }} style={styles.categoryImage} />
+                    <View style={styles.categoryOverlay}>
+                      <View style={styles.categoryHeader}>
+                        {/* Eye / View Icon */}
+                        <View style={styles.actionIconCircle}>
+                          <Ionicons name="eye-outline" size={13} color={colors.plumDeep} />
+                        </View>
+
+                        {/* Pencil (Edit Category) Icon */}
+                        <TouchableOpacity
+                          style={styles.actionIconCircle}
+                          activeOpacity={0.8}
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            handleOpenEditCategory(cat);
+                          }}
+                        >
+                          <Ionicons name="pencil" size={13} color={colors.plumDeep} />
+                        </TouchableOpacity>
+                      </View>
+
+                      <View>
+                        <Text style={styles.categoryName}>{cat.name}</Text>
+                        <Text style={styles.categoryServicesText}>
+                          {count > 0 ? count : cat.serviceCount} services
                         </Text>
                       </View>
                     </View>
-                    <Text style={styles.categoryName}>{cat.name}</Text>
-                    <Text style={styles.categoryServicesText}>
-                      {cat.serviceCount} services
-                    </Text>
-                  </View>
-                </View>
-              ))}
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
         ) : (
-          /* 2. Service List View */
+          /* ============================================================ */
+          /* VIEW 2: SERVICE LIST VIEW                                    */
+          /* ============================================================ */
           <View>
-            {/* Search Bar */}
+            {/* Search Bar + Add Button */}
             <View style={styles.searchRow}>
               <View style={styles.searchBar}>
                 <Ionicons name="search" size={16} color={colors.textMuted} />
@@ -221,11 +346,62 @@ export const ServicesScreen = () => {
                 />
               </View>
               <TouchableOpacity
-                style={styles.filterButton}
-                onPress={() => setIsNewServiceOpen(true)}
+                style={styles.addButton}
+                onPress={handleOpenAddService}
+                activeOpacity={0.8}
               >
                 <Ionicons name="add" size={20} color={colors.white} />
               </TouchableOpacity>
+            </View>
+
+            {/* Category Filter Chips Horizontal Scroll */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.filterScroll}
+            >
+              <TouchableOpacity
+                style={[
+                  styles.filterPill,
+                  (!selectedCategoryFilter || selectedCategoryFilter === 'All') && styles.filterPillActive,
+                ]}
+                onPress={() => setSelectedCategoryFilter('All')}
+                activeOpacity={0.8}
+              >
+                <Text
+                  style={[
+                    styles.filterPillText,
+                    (!selectedCategoryFilter || selectedCategoryFilter === 'All') && styles.filterPillTextActive,
+                  ]}
+                >
+                  All ({services.length})
+                </Text>
+              </TouchableOpacity>
+
+              {categories.map((cat) => {
+                const count = services.filter((s) => s.category.toLowerCase() === cat.name.toLowerCase()).length;
+                const isSelected = selectedCategoryFilter?.toLowerCase() === cat.name.toLowerCase();
+                return (
+                  <TouchableOpacity
+                    key={cat.id}
+                    style={[styles.filterPill, isSelected && styles.filterPillActive]}
+                    onPress={() => setSelectedCategoryFilter(cat.name)}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[styles.filterPillText, isSelected && styles.filterPillTextActive]}>
+                      {cat.name} ({count > 0 ? count : cat.serviceCount})
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+
+            {/* Showing Count Indicator */}
+            <View style={styles.countRow}>
+              <Text style={styles.showingText}>
+                Showing <Text style={{ fontWeight: '700', color: colors.plumDeep }}>{filteredServices.length} services</Text>
+                {selectedCategoryFilter && selectedCategoryFilter !== 'All' ? ` in ${selectedCategoryFilter}` : ''}
+              </Text>
             </View>
 
             {/* Service Rows */}
@@ -241,15 +417,27 @@ export const ServicesScreen = () => {
                     {service.name.charAt(0)}
                   </Text>
                 </View>
+
                 <View style={styles.serviceInfo}>
                   <Text style={styles.serviceName}>{service.name}</Text>
-                  <Text style={styles.serviceMeta}>
-                    {service.category} · {service.duration}
-                  </Text>
+                  <View style={styles.serviceMetaRow}>
+                    <Text style={styles.serviceCategoryText}>{service.category}</Text>
+                    {service.popular && (
+                      <View style={styles.popularBadge}>
+                        <Text style={styles.popularBadgeText}>Popular</Text>
+                      </View>
+                    )}
+                  </View>
                 </View>
-                <Text style={styles.servicePrice}>
-                  {formatRupee(service.price)}
-                </Text>
+
+                <View style={styles.servicePriceBlock}>
+                  <Text style={styles.servicePrice}>
+                    {formatRupee(service.price)}
+                  </Text>
+                  <View style={styles.editActionDots}>
+                    <Ionicons name="ellipsis-horizontal" size={16} color={colors.textMuted} />
+                  </View>
+                </View>
               </TouchableOpacity>
             ))}
           </View>
@@ -258,148 +446,309 @@ export const ServicesScreen = () => {
         <View style={{ height: 100 }} />
       </ScrollView>
 
-      {/* Modal 1: New Category Sheet */}
-      <Modal visible={isAddCategoryOpen} transparent animationType="slide">
+      {/* ============================================================ */}
+      {/* MODAL 1: NEW / EDIT CATEGORY MODAL                           */}
+      {/* ============================================================ */}
+      <Modal visible={isCategoryModalOpen} transparent animationType="slide">
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>New category</Text>
-              <TouchableOpacity onPress={() => setIsAddCategoryOpen(false)}>
-                <Ionicons name="close-circle-outline" size={24} color={colors.textMuted} />
+            {/* Modal Header */}
+            <View style={styles.modalHeaderRow}>
+              <View>
+                <Text style={styles.modalEyebrow}>SERVICE CATEGORIES</Text>
+                <Text style={styles.modalTitle}>
+                  {editingCategory ? 'Edit category' : 'New category'}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.modalCloseCircle}
+                onPress={() => {
+                  setIsCategoryModalOpen(false);
+                  setEditingCategory(null);
+                }}
+              >
+                <Ionicons name="close" size={18} color={colors.plumDeep} />
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.inputLabel}>CATEGORY NAME</Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="e.g. Bridal Packages"
-              value={newCatName}
-              onChangeText={setNewCatName}
-            />
+            <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 520 }}>
+              {/* Category Name */}
+              <View style={styles.inputHeaderRow}>
+                <Text style={styles.inputLabel}>CATEGORY NAME</Text>
+                <Text style={styles.charCounter}>{catName.length}/30</Text>
+              </View>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="e.g. Bridal Packages"
+                placeholderTextColor={colors.textMuted}
+                value={catName}
+                onChangeText={(t) => setCatName(t.slice(0, 30))}
+                maxLength={30}
+              />
 
-            <Text style={styles.inputLabel}>DESCRIPTION</Text>
-            <TextInput
-              style={[styles.modalInput, { height: 70 }]}
-              placeholder="What treatments does this category include?"
-              multiline
-              value={newCatDesc}
-              onChangeText={setNewCatDesc}
-            />
+              {/* Short Description */}
+              <View style={styles.inputHeaderRow}>
+                <Text style={styles.inputLabel}>SHORT DESCRIPTION</Text>
+                <Text style={styles.optionalBadge}>optional</Text>
+              </View>
+              <TextInput
+                style={[styles.modalInput, { height: 70, textAlignVertical: 'top' }]}
+                placeholder="What treatments does this category include?"
+                placeholderTextColor={colors.textMuted}
+                multiline
+                value={catDesc}
+                onChangeText={setCatDesc}
+              />
 
-            <View style={styles.modalButtonRow}>
-              <TouchableOpacity
-                style={styles.btnSecondary}
-                onPress={() => setIsAddCategoryOpen(false)}
-              >
-                <Text style={styles.btnSecondaryText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.btnPrimary}
-                onPress={handleAddCategory}
-              >
-                <Text style={styles.btnPrimaryText}>Add category</Text>
-              </TouchableOpacity>
-            </View>
+              {/* Category Photo */}
+              <View style={styles.inputHeaderRow}>
+                <Text style={styles.inputLabel}>CATEGORY PHOTO</Text>
+                <Text style={styles.optionalBadge}>optional</Text>
+              </View>
+              <View style={styles.photoUploadRow}>
+                <View style={styles.photoPreviewBox}>
+                  <Ionicons name="image-outline" size={24} color={colors.textMuted} />
+                </View>
+                <View style={{ flex: 1, marginLeft: spacing.md }}>
+                  <TouchableOpacity style={styles.uploadBtn} activeOpacity={0.8}>
+                    <Text style={styles.uploadBtnText}>Upload photo</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.photoHelpText}>
+                    JPG or PNG. Without a photo the card uses the colour below.
+                  </Text>
+                </View>
+              </View>
+
+              {/* Icon Selector */}
+              <Text style={[styles.inputLabel, { marginTop: spacing.md }]}>ICON</Text>
+              <View style={styles.iconSelectionRow}>
+                {CATEGORY_ICONS.map((iconName, index) => (
+                  <TouchableOpacity
+                    key={iconName}
+                    style={[
+                      styles.iconSelectCircle,
+                      selectedIconIndex === index && styles.iconSelectCircleActive,
+                    ]}
+                    onPress={() => setSelectedIconIndex(index)}
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons
+                      name={iconName}
+                      size={18}
+                      color={selectedIconIndex === index ? colors.plumDeep : colors.purple}
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Card Colour Selector */}
+              <Text style={[styles.inputLabel, { marginTop: spacing.md }]}>CARD COLOUR</Text>
+              <View style={styles.colorSelectionRow}>
+                {CATEGORY_COLORS.map((hexColor) => (
+                  <TouchableOpacity
+                    key={hexColor}
+                    style={[
+                      styles.colorSwatchRing,
+                      selectedColor === hexColor && styles.colorSwatchRingActive,
+                    ]}
+                    onPress={() => setSelectedColor(hexColor)}
+                    activeOpacity={0.8}
+                  >
+                    <View style={[styles.colorSwatchDot, { backgroundColor: hexColor }]} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Modal Buttons */}
+              <View style={styles.modalButtonRow}>
+                <TouchableOpacity
+                  style={styles.btnSecondary}
+                  onPress={() => {
+                    setIsCategoryModalOpen(false);
+                    setEditingCategory(null);
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.btnSecondaryText}>Cancel</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.btnPrimary}
+                  onPress={handleSaveCategory}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.btnPrimaryText}>
+                    {editingCategory ? 'Save changes' : 'Add category'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Delete Option if Editing */}
+              {editingCategory && (
+                <TouchableOpacity
+                  style={styles.deleteLink}
+                  onPress={() => handleDeleteCategory(editingCategory.id)}
+                >
+                  <Text style={styles.deleteLinkText}>Delete this category</Text>
+                </TouchableOpacity>
+              )}
+            </ScrollView>
           </View>
         </View>
       </Modal>
 
-      {/* Modal 2: Edit / New Service Sheet */}
-      <Modal
-        visible={isNewServiceOpen || !!editingService}
-        transparent
-        animationType="slide"
-      >
+      {/* ============================================================ */}
+      {/* MODAL 2: NEW / EDIT SERVICE MODAL                            */}
+      {/* ============================================================ */}
+      <Modal visible={isServiceModalOpen} transparent animationType="slide">
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
-                {editingService ? 'Edit service' : 'New service'}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setIsNewServiceOpen(false);
-                  setEditingService(null);
-                }}
-              >
-                <Ionicons name="close-circle-outline" size={24} color={colors.textMuted} />
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.inputLabel}>SERVICE NAME</Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="e.g. Signature Balayage"
-              value={serviceName}
-              onChangeText={setServiceName}
-            />
-
-            <View style={styles.twoColumnRow}>
-              <View style={{ flex: 1, marginRight: spacing.sm }}>
-                <Text style={styles.inputLabel}>DURATION (MIN)</Text>
-                <TextInput
-                  style={styles.modalInput}
-                  placeholder="e.g. 60"
-                  value={serviceDuration}
-                  onChangeText={setServiceDuration}
-                  keyboardType="numeric"
-                />
-              </View>
-              <View style={{ flex: 1, marginLeft: spacing.sm }}>
-                <Text style={styles.inputLabel}>PRICE (₹)</Text>
-                <TextInput
-                  style={styles.modalInput}
-                  placeholder="e.g. 2500"
-                  value={servicePrice}
-                  onChangeText={setServicePrice}
-                  keyboardType="numeric"
-                />
-              </View>
-            </View>
-
-            {/* Quick chips */}
-            <View style={styles.chipsRow}>
-              {['30 min', '45 min', '1 hr', '1h 30m', '2 hr'].map((chip) => (
-                <TouchableOpacity
-                  key={chip}
-                  style={styles.chip}
-                  onPress={() => setServiceDuration(chip)}
-                >
-                  <Text style={styles.chipText}>{chip}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Popular Toggle */}
-            <View style={styles.toggleRow}>
-              <Text style={styles.toggleLabel}>Mark as popular</Text>
-              <Switch
-                value={isPopular}
-                onValueChange={setIsPopular}
-                trackColor={{ false: colors.border, true: colors.purple }}
-                thumbColor={colors.white}
-              />
-            </View>
-
-            <View style={styles.modalButtonRow}>
-              <TouchableOpacity
-                style={styles.btnSecondary}
-                onPress={() => {
-                  setIsNewServiceOpen(false);
-                  setEditingService(null);
-                }}
-              >
-                <Text style={styles.btnSecondaryText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.btnPrimary}
-                onPress={handleSaveService}
-              >
-                <Text style={styles.btnPrimaryText}>
-                  {editingService ? 'Save changes' : 'Add service'}
+            <View style={styles.modalHeaderRow}>
+              <View>
+                <Text style={styles.modalEyebrow}>SERVICE LIST</Text>
+                <Text style={styles.modalTitle}>
+                  {editingService ? 'Edit service' : 'New service'}
                 </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.modalCloseCircle}
+                onPress={() => {
+                  setIsServiceModalOpen(false);
+                  setEditingService(null);
+                }}
+              >
+                <Ionicons name="close" size={18} color={colors.plumDeep} />
               </TouchableOpacity>
             </View>
+
+            <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 520 }}>
+              <Text style={styles.inputLabel}>SERVICE NAME</Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="e.g. Signature Balayage"
+                placeholderTextColor={colors.textMuted}
+                value={serviceName}
+                onChangeText={setServiceName}
+              />
+
+              <Text style={styles.inputLabel}>CATEGORY</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: spacing.md }}>
+                {categories.map((cat) => (
+                  <TouchableOpacity
+                    key={cat.id}
+                    style={[
+                      styles.categoryChoicePill,
+                      serviceCategory.toLowerCase() === cat.name.toLowerCase() && styles.categoryChoicePillActive,
+                    ]}
+                    onPress={() => setServiceCategory(cat.name)}
+                  >
+                    <Text
+                      style={[
+                        styles.categoryChoicePillText,
+                        serviceCategory.toLowerCase() === cat.name.toLowerCase() && styles.categoryChoicePillTextActive,
+                      ]}
+                    >
+                      {cat.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              <View style={styles.twoColumnRow}>
+                <View style={{ flex: 1, marginRight: spacing.sm }}>
+                  <Text style={styles.inputLabel}>DURATION</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    placeholder="e.g. 1h"
+                    placeholderTextColor={colors.textMuted}
+                    value={serviceDuration}
+                    onChangeText={setServiceDuration}
+                  />
+                </View>
+
+                <View style={{ flex: 1, marginLeft: spacing.sm }}>
+                  <Text style={styles.inputLabel}>PRICE (₹)</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    placeholder="e.g. 2500"
+                    placeholderTextColor={colors.textMuted}
+                    value={servicePrice}
+                    onChangeText={setServicePrice}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+
+              {/* Quick Duration Chips */}
+              <View style={styles.chipsRow}>
+                {['30m', '45m', '1h', '1h 15m', '1h 30m', '2h', '2h 30m'].map((chip) => (
+                  <TouchableOpacity
+                    key={chip}
+                    style={[styles.chip, serviceDuration === chip && styles.chipActive]}
+                    onPress={() => setServiceDuration(chip)}
+                  >
+                    <Text style={[styles.chipText, serviceDuration === chip && styles.chipTextActive]}>
+                      {chip}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.inputLabel}>DESCRIPTION</Text>
+              <TextInput
+                style={[styles.modalInput, { height: 60 }]}
+                placeholder="What does this service include?"
+                placeholderTextColor={colors.textMuted}
+                multiline
+                value={serviceDesc}
+                onChangeText={setServiceDesc}
+              />
+
+              {/* Popular Toggle */}
+              <View style={styles.toggleRow}>
+                <Text style={styles.toggleLabel}>Mark as popular</Text>
+                <Switch
+                  value={isPopular}
+                  onValueChange={setIsPopular}
+                  trackColor={{ false: colors.border, true: colors.plumDeep }}
+                  thumbColor={colors.white}
+                />
+              </View>
+
+              {/* Action Buttons */}
+              <View style={styles.modalButtonRow}>
+                <TouchableOpacity
+                  style={styles.btnSecondary}
+                  onPress={() => {
+                    setIsServiceModalOpen(false);
+                    setEditingService(null);
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.btnSecondaryText}>Cancel</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.btnPrimary}
+                  onPress={handleSaveService}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.btnPrimaryText}>
+                    {editingService ? 'Save changes' : 'Add service'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Delete Service Option if Editing */}
+              {editingService && (
+                <TouchableOpacity
+                  style={styles.deleteLink}
+                  onPress={() => handleDeleteService(editingService.id)}
+                >
+                  <Text style={styles.deleteLinkText}>Delete this service</Text>
+                </TouchableOpacity>
+              )}
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -498,7 +847,7 @@ const styles = StyleSheet.create({
   },
   categoryOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(43, 10, 59, 0.45)',
+    backgroundColor: 'rgba(43, 10, 59, 0.42)',
     padding: spacing.md,
     justifyContent: 'space-between',
   },
@@ -506,34 +855,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  actionIconPill: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: 'rgba(255,255,255,0.85)',
+  actionIconCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.92)',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  categoryCountBadge: {
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radius.pill,
-  },
-  categoryCountText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: colors.white,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 2,
+    elevation: 2,
   },
   categoryName: {
     fontSize: 17,
     fontWeight: '700',
     color: colors.white,
     marginBottom: 2,
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   categoryServicesText: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.8)',
+    color: 'rgba(255,255,255,0.85)',
+    fontWeight: '500',
   },
   searchRow: {
     flexDirection: 'row',
@@ -558,13 +905,51 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textPrimary,
   },
-  filterButton: {
+  addButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.purple,
+    backgroundColor: colors.plumDeep,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: colors.plumDeep,
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  filterScroll: {
+    paddingBottom: spacing.sm,
+    gap: 8,
+  },
+  filterPill: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: 7,
+    borderRadius: radius.pill,
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginRight: spacing.xs,
+  },
+  filterPillActive: {
+    backgroundColor: colors.plumDeep,
+    borderColor: colors.plumDeep,
+  },
+  filterPillText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.plumDeep,
+  },
+  filterPillTextActive: {
+    color: colors.white,
+  },
+  countRow: {
+    marginBottom: spacing.sm,
+    marginTop: 2,
+  },
+  showingText: {
+    fontSize: 12,
+    color: colors.textMuted,
   },
   serviceRow: {
     flexDirection: 'row',
@@ -577,18 +962,18 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   serviceAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.lavender,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#F7EDDE',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.md,
   },
   serviceAvatarText: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '700',
-    color: colors.purple,
+    color: '#8A583B',
   },
   serviceInfo: {
     flex: 1,
@@ -599,14 +984,38 @@ const styles = StyleSheet.create({
     color: colors.plumDeep,
     marginBottom: 2,
   },
-  serviceMeta: {
+  serviceMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  serviceCategoryText: {
     fontSize: 12,
     color: colors.textMuted,
+  },
+  popularBadge: {
+    backgroundColor: '#F3E8DC',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: radius.pill,
+    marginLeft: spacing.xs,
+  },
+  popularBadgeText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#8A583B',
+  },
+  servicePriceBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   servicePrice: {
     fontSize: 14,
     fontWeight: '700',
     color: colors.plumDeep,
+  },
+  editActionDots: {
+    padding: 4,
   },
   modalBackdrop: {
     flex: 1,
@@ -614,32 +1023,207 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalCard: {
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    padding: spacing.xl,
+    backgroundColor: '#FAF5EE',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: Platform.OS === 'ios' ? 36 : spacing.xl,
+    maxHeight: '90%',
   },
-  modalHeader: {
+  modalHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
+    alignItems: 'flex-start',
+    marginBottom: spacing.md,
+  },
+  modalEyebrow: {
+    ...typography.captionTracked,
+    fontSize: 10,
+    color: '#8E685C',
+    marginBottom: 2,
   },
   modalTitle: {
     ...typography.serifH2,
+    fontSize: 22,
+    color: colors.plumDeep,
+  },
+  modalCloseCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.06)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inputHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
   },
   inputLabel: {
     ...typography.captionTracked,
     fontSize: 10,
-    marginBottom: 4,
+    color: '#8E685C',
+  },
+  charCounter: {
+    fontSize: 10,
+    color: colors.textMuted,
+  },
+  optionalBadge: {
+    fontSize: 10,
+    fontStyle: 'italic',
+    color: colors.textMuted,
   },
   modalInput: {
-    backgroundColor: colors.lavender,
+    backgroundColor: '#F2E9DE',
     borderRadius: radius.input,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     fontSize: 14,
+    color: colors.textPrimary,
     marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: '#E5D6C7',
+  },
+  photoUploadRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  photoPreviewBox: {
+    width: 72,
+    height: 72,
+    borderRadius: radius.md,
+    backgroundColor: '#EFE5D8',
+    borderWidth: 1.5,
+    borderColor: '#D8C6B3',
+    borderStyle: 'dashed',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  uploadBtn: {
+    backgroundColor: colors.plumDeep,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 7,
+    borderRadius: radius.pill,
+    alignSelf: 'flex-start',
+    marginBottom: 4,
+  },
+  uploadBtnText: {
+    color: colors.white,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  photoHelpText: {
+    fontSize: 10,
+    color: colors.textMuted,
+    lineHeight: 14,
+  },
+  iconSelectionRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: spacing.md,
+  },
+  iconSelectCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F2E8DC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+  },
+  iconSelectCircleActive: {
+    borderColor: colors.plumDeep,
+    backgroundColor: colors.white,
+  },
+  colorSelectionRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: spacing.lg,
+  },
+  colorSwatchRing: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  colorSwatchRingActive: {
+    borderColor: colors.plumDeep,
+  },
+  colorSwatchDot: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+  },
+  modalButtonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: spacing.sm,
+    gap: 12,
+  },
+  btnSecondary: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: radius.pill,
+    backgroundColor: colors.white,
+    borderWidth: 1.5,
+    borderColor: colors.plumDeep,
+    alignItems: 'center',
+  },
+  btnSecondaryText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.plumDeep,
+  },
+  btnPrimary: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: radius.pill,
+    backgroundColor: colors.plumDeep,
+    alignItems: 'center',
+  },
+  btnPrimaryText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.white,
+  },
+  deleteLink: {
+    marginTop: spacing.md,
+    alignItems: 'center',
+    paddingVertical: spacing.xs,
+  },
+  deleteLinkText: {
+    fontSize: 12,
+    color: colors.danger,
+    fontWeight: '600',
+  },
+  categoryChoicePill: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: radius.pill,
+    backgroundColor: '#F2E9DE',
+    marginRight: spacing.xs,
+    borderWidth: 1,
+    borderColor: '#E5D6C7',
+  },
+  categoryChoicePillActive: {
+    backgroundColor: colors.plumDeep,
+    borderColor: colors.plumDeep,
+  },
+  categoryChoicePillText: {
+    fontSize: 12,
+    color: colors.plumDeep,
+    fontWeight: '600',
+  },
+  categoryChoicePillTextActive: {
+    color: colors.white,
   },
   twoColumnRow: {
     flexDirection: 'row',
@@ -648,60 +1232,39 @@ const styles = StyleSheet.create({
   chipsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    gap: 6,
     marginBottom: spacing.md,
   },
   chip: {
-    backgroundColor: colors.lavender,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
+    backgroundColor: '#F2E9DE',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: radius.pill,
-    marginRight: spacing.xs,
-    marginBottom: spacing.xs,
+    borderWidth: 1,
+    borderColor: '#E5D6C7',
+  },
+  chipActive: {
+    backgroundColor: colors.plumDeep,
+    borderColor: colors.plumDeep,
   },
   chipText: {
     fontSize: 11,
-    color: colors.purple,
+    color: colors.plumDeep,
     fontWeight: '600',
+  },
+  chipTextActive: {
+    color: colors.white,
   },
   toggleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.lg,
+    paddingVertical: 4,
   },
   toggleLabel: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: colors.plumDeep,
-  },
-  modalButtonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  btnSecondary: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    borderRadius: radius.pill,
-    backgroundColor: colors.lavender,
-    alignItems: 'center',
-    marginRight: spacing.sm,
-  },
-  btnSecondaryText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.textMuted,
-  },
-  btnPrimary: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    borderRadius: radius.pill,
-    backgroundColor: colors.purple,
-    alignItems: 'center',
-    marginLeft: spacing.sm,
-  },
-  btnPrimaryText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.white,
   },
 });
