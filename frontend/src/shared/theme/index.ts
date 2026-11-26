@@ -1,3 +1,7 @@
+// Salonova brand palette + fonts (used by the welcome / sign-up screens)
+export * from './brand';
+export * from './fonts';
+
 export const colors = {
   plumDeep: '#2B0A3B',
   purple: '#68337C',
@@ -69,4 +73,9 @@ export const typography = {
   h1: { fontSize: 28, fontWeight: '700' as const, lineHeight: 34 },
   h2: { fontSize: 22, fontWeight: '700' as const, lineHeight: 28 },
   caption: { fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
+<<<<<<< HEAD
 };
+=======
+  captionBold: { fontSize: 12, fontWeight: '600' as const, lineHeight: 16 },
+};
+>>>>>>> e4f9cff (Updated project changes)
