@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Animated, StyleSheet, StyleProp, ViewStyle, DimensionValue } from 'react-native';
+import { View, Animated, StyleSheet, StyleProp, ViewStyle, DimensionValue, Platform } from 'react-native';
 import { colors, radius, spacing } from '../theme';
 
 interface SkeletonProps {
@@ -13,6 +13,7 @@ interface SkeletonProps {
 /**
  * Base Skeleton Bone component.
  * Uses a smooth looping opacity animation (pulse) to simulate loading.
+ * Works seamlessly across Mobile (Android, iOS) and Web browsers.
  */
 export const Skeleton: React.FC<SkeletonProps> = ({
   width = '100%',
@@ -29,12 +30,12 @@ export const Skeleton: React.FC<SkeletonProps> = ({
         Animated.timing(pulseAnim, {
           toValue: 0.9,
           duration: 750,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
         Animated.timing(pulseAnim, {
           toValue: 0.4,
           duration: 750,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
       ])
     );
