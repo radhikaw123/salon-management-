@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.lavender,
+    
   },
   scrollContent: {
     paddingHorizontal: spacing.lg,

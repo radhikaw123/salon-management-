@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing } from '../theme';
 
@@ -14,8 +15,12 @@ export const SalonHeader: React.FC<SalonHeaderProps> = ({
   rightActionIcon = 'arrow-redo-outline',
   onRightActionPress,
 }) => {
+  const insets = useSafeAreaInsets();
+  const statusBarHeight = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 0;
+  const topPadding = Math.max(insets.top, statusBarHeight, 20) + spacing.sm;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: topPadding }]}>
       <View style={styles.leftRow}>
         <View style={styles.logoBadge}>
           <Image
@@ -47,7 +52,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.sm,
     paddingBottom: spacing.md,
   },
   leftRow: {
