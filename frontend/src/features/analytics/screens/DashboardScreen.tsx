@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, gradients, spacing, radius, typography } from '../../../shared/theme';
 import { SalonHeader } from '../../../shared/components/SalonHeader';
+import { DashboardSkeleton } from '../../../shared/components/Skeleton';
 import {
   mockBusinessPulse,
   mockLiveSchedule,
@@ -17,6 +19,25 @@ import {
 } from '../../../shared/api/mockData';
 
 export const DashboardScreen = ({ navigation }: any) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 900);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setRefreshing(false);
+    }, 800);
+  };
+
   return (
     <View style={styles.screen}>
       <SalonHeader
@@ -27,15 +48,27 @@ export const DashboardScreen = ({ navigation }: any) => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.purple}
+            colors={[colors.purple]}
+          />
+        }
       >
-        {/* Date & Greeting */}
-        <View style={styles.greetingSection}>
-          <Text style={styles.dateCaption}>THURSDAY, 14 NOVEMBER</Text>
-          <Text style={styles.greetingTitle}>
-            Good morning,{'\n'}
-            <Text style={{ fontStyle: 'italic', fontWeight: '400' }}>Isabella.</Text>
-          </Text>
-        </View>
+        {isLoading ? (
+          <DashboardSkeleton />
+        ) : (
+          <>
+            {/* Date & Greeting */}
+            <View style={styles.greetingSection}>
+              <Text style={styles.dateCaption}>THURSDAY, 14 NOVEMBER</Text>
+              <Text style={styles.greetingTitle}>
+                Good morning,{'\n'}
+                <Text style={{ fontStyle: 'italic', fontWeight: '400' }}>Isabella.</Text>
+              </Text>
+            </View>
 
         {/* Business Pulse Header */}
         <View style={styles.sectionHeader}>
@@ -166,6 +199,8 @@ export const DashboardScreen = ({ navigation }: any) => {
             </TouchableOpacity>
           </View>
         ))}
+          </>
+        )}
 
         <View style={{ height: 100 }} />
       </ScrollView>
