@@ -92,7 +92,7 @@ export const mockCategories: ServiceCategory[] = [
   {
     id: 'cat_1',
     name: 'Hair',
-    serviceCount: 18,
+    serviceCount: 10,
     imageUrl: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=500&auto=format&fit=crop&q=60',
   },
   {
@@ -104,36 +104,75 @@ export const mockCategories: ServiceCategory[] = [
   {
     id: 'cat_3',
     name: 'Nails',
-    serviceCount: 14,
+    serviceCount: 4,
     imageUrl: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=500&auto=format&fit=crop&q=60',
   },
   {
     id: 'cat_4',
     name: 'Makeup',
-    serviceCount: 8,
+    serviceCount: 3,
     imageUrl: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=500&auto=format&fit=crop&q=60',
   },
   {
     id: 'cat_5',
     name: 'Lashes & Brows',
-    serviceCount: 9,
+    serviceCount: 3,
     imageUrl: 'https://images.unsplash.com/photo-1583001931096-959e9a1a6223?w=500&auto=format&fit=crop&q=60',
   },
   {
     id: 'cat_6',
     name: 'Spa & Body',
-    serviceCount: 6,
+    serviceCount: 2,
     imageUrl: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=500&auto=format&fit=crop&q=60',
   },
 ];
 
 export const mockServicesList: ServiceItem[] = [
-  { id: 'srv_1', name: 'Signature Balayage', category: 'Hair', duration: '2h 30m', price: 3800, popular: true },
-  { id: 'srv_2', name: 'Hydra-glow Facial', category: 'Skin & Facial', duration: '1h 15m', price: 2600, popular: true },
-  { id: 'srv_3', name: 'Gel Manicure', category: 'Nails', duration: '45m', price: 1100, popular: false },
-  { id: 'srv_4', name: 'Bridal Makeup', category: 'Makeup', duration: '2h', price: 5500, popular: true },
-  { id: 'srv_5', name: 'Lash Lift & Tint', category: 'Lashes & Brows', duration: '1h', price: 1700, popular: false },
-  { id: 'srv_6', name: 'Relaxing Head Spa', category: 'Hair', duration: '50m', price: 1800, popular: true },
+  // 10 Hair Services
+  { id: 'srv_h1', name: 'Signature Balayage', category: 'Hair', duration: '2h 30m', price: 3800, popular: true },
+  { id: 'srv_h2', name: 'Relaxing Head Spa', category: 'Hair', duration: '50m', price: 1800, popular: true },
+  { id: 'srv_h3', name: 'Keratin Smoothening Treatment', category: 'Hair', duration: '2h', price: 4500, popular: true },
+  { id: 'srv_h4', name: "Classic Women's Haircut & Blowdry", category: 'Hair', duration: '45m', price: 1200, popular: true },
+  { id: 'srv_h5', name: 'Global Hair Colour & Gloss', category: 'Hair', duration: '1h 45m', price: 3200, popular: false },
+  { id: 'srv_h6', name: "Men's Executive Fade & Styling", category: 'Hair', duration: '30m', price: 650, popular: false },
+  { id: 'srv_h7', name: 'Olaplex Deep Conditioning Ritual', category: 'Hair', duration: '45m', price: 2100, popular: false },
+  { id: 'srv_h8', name: 'Root Touch-up & Refresh', category: 'Hair', duration: '1h', price: 1600, popular: false },
+  { id: 'srv_h9', name: 'Moroccan Oil Intense Hydration', category: 'Hair', duration: '1h', price: 2400, popular: false },
+  { id: 'srv_h10', name: 'Brazilian Blowout Anti-Frizz', category: 'Hair', duration: '2h 30m', price: 5000, popular: false },
+
+  // 12 Skin & Facial Services
+  { id: 'srv_s1', name: 'Hydra-glow Facial', category: 'Skin & Facial', duration: '1h 15m', price: 2600, popular: true },
+  { id: 'srv_s2', name: '24K Gold Radiance Treatment', category: 'Skin & Facial', duration: '1h 30m', price: 3500, popular: true },
+  { id: 'srv_s3', name: 'Deep Pore Charcoal Detox', category: 'Skin & Facial', duration: '50m', price: 1800, popular: false },
+  { id: 'srv_s4', name: 'Vitamin C Collagen Boost Facial', category: 'Skin & Facial', duration: '1h 15m', price: 2800, popular: false },
+  { id: 'srv_s5', name: 'Oxygen Infusion Therapy', category: 'Skin & Facial', duration: '1h', price: 3200, popular: false },
+  { id: 'srv_s6', name: 'Anti-Aging Peptide Lifting Ritual', category: 'Skin & Facial', duration: '1h 30m', price: 4200, popular: true },
+  { id: 'srv_s7', name: 'Organic Fruit Cleanse & Glow', category: 'Skin & Facial', duration: '45m', price: 1400, popular: false },
+  { id: 'srv_s8', name: 'Derma Brightening Peel', category: 'Skin & Facial', duration: '1h', price: 2900, popular: false },
+  { id: 'srv_s9', name: 'Rose Quartz Calming Facial', category: 'Skin & Facial', duration: '1h', price: 2200, popular: false },
+  { id: 'srv_s10', name: 'Korean Glass Skin Facial', category: 'Skin & Facial', duration: '1h 20m', price: 3800, popular: true },
+  { id: 'srv_s11', name: "Men's Energizing Skin Revitalizer", category: 'Skin & Facial', duration: '45m', price: 1900, popular: false },
+  { id: 'srv_s12', name: 'Acne Defense & Calming Treatment', category: 'Skin & Facial', duration: '1h', price: 2500, popular: false },
+
+  // Nails
+  { id: 'srv_n1', name: 'Gel Manicure', category: 'Nails', duration: '45m', price: 1100, popular: true },
+  { id: 'srv_n2', name: 'Acrylic Nail Extensions', category: 'Nails', duration: '1h 30m', price: 2500, popular: true },
+  { id: 'srv_n3', name: 'Classic Spa Pedicure', category: 'Nails', duration: '1h', price: 1400, popular: false },
+  { id: 'srv_n4', name: 'Chrome Mirror Finish Art', category: 'Nails', duration: '30m', price: 800, popular: false },
+
+  // Makeup
+  { id: 'srv_m1', name: 'Bridal Makeup', category: 'Makeup', duration: '2h', price: 5500, popular: true },
+  { id: 'srv_m2', name: 'Airbrush Party Makeup', category: 'Makeup', duration: '1h 15m', price: 3200, popular: true },
+  { id: 'srv_m3', name: 'Subtle Day Glam & Hairstyling', category: 'Makeup', duration: '1h', price: 2200, popular: false },
+
+  // Lashes & Brows
+  { id: 'srv_l1', name: 'Lash Lift & Tint', category: 'Lashes & Brows', duration: '1h', price: 1700, popular: true },
+  { id: 'srv_l2', name: 'Microblading Brow Sculpt', category: 'Lashes & Brows', duration: '1h 45m', price: 4800, popular: false },
+  { id: 'srv_l3', name: 'Russian Volume Lash Extensions', category: 'Lashes & Brows', duration: '1h 30m', price: 3400, popular: false },
+
+  // Spa & Body
+  { id: 'srv_b1', name: 'Aromatherapy Full Body Massage', category: 'Spa & Body', duration: '1h 15m', price: 2800, popular: true },
+  { id: 'srv_b2', name: 'Swedish Muscle Relief Therapy', category: 'Spa & Body', duration: '1h', price: 2400, popular: false },
 ];
 
 export const mockStaffDirectory: StaffMember[] = [
