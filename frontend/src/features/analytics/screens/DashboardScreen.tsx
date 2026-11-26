@@ -25,7 +25,7 @@ export const DashboardScreen = ({ navigation }: any) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 900);
+    }, 2200); // 2.2 seconds so skeleton is clearly visible on web & mobile
     return () => clearTimeout(timer);
   }, []);
 
@@ -35,14 +35,14 @@ export const DashboardScreen = ({ navigation }: any) => {
     setTimeout(() => {
       setIsLoading(false);
       setRefreshing(false);
-    }, 800);
+    }, 1800);
   };
 
   return (
     <View style={styles.screen}>
       <SalonHeader
-        rightActionIcon="arrow-redo-outline"
-        onRightActionPress={() => navigation?.navigate('Finance')}
+        rightActionIcon="refresh-outline"
+        onRightActionPress={onRefresh}
       />
 
       <ScrollView
