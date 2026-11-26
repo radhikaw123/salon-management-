@@ -12,10 +12,6 @@
     "test": "jest"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@expo/metro-runtime": "~58.0.17",
-    "@expo/vector-icons": "^15.1.1",
-=======
     "@expo-google-fonts/cormorant-garamond": "^0.4.1",
     "@expo-google-fonts/dm-sans": "^0.4.2",
     "@expo-google-fonts/inter": "^0.4.2",
@@ -23,7 +19,6 @@
     "@expo/metro-runtime": "~58.0.17",
     "@expo/vector-icons": "^15.0.2",
     "@react-native-masked-view/masked-view": "0.3.2",
->>>>>>> e4f9cff (Updated project changes)
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
@@ -31,14 +26,9 @@
     "@tanstack/react-query": "^5.28.9",
     "axios": "^1.6.8",
     "date-fns": "^3.6.0",
-<<<<<<< HEAD
     "expo": "^58.0.26",
     "expo-constants": "~58.0.16",
-=======
-    "expo": "^58.0.0",
-    "expo-constants": "~58.0.16",
     "expo-font": "~58.0.12",
->>>>>>> e4f9cff (Updated project changes)
     "expo-image": "~58.0.18",
     "expo-linear-gradient": "~58.0.4",
     "expo-secure-store": "~58.0.3",

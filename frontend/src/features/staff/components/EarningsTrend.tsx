@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Pressable, Animated, Easing, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Animated, Easing, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { brand, fonts } from '@/shared/theme';
 import { formatRupees } from '../format';
 import type { Bucket } from '../earnings';
@@ -87,7 +87,7 @@ export function EarningsTrend({ buckets, highlightIndex, title, total, servicesC
         <Text style={styles.total}>{formatRupees(total)}</Text>
       </View>
 
-      <View style={styles.chart} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      <View style={styles.chart} onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}>
         <View style={styles.bars}>
           {buckets.map((b, i) => (
             <Pressable

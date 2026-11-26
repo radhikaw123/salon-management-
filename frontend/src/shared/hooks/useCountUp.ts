@@ -7,7 +7,7 @@ export function useCountUp(target: number, duration = 800) {
 
   useEffect(() => {
     const anim = new Animated.Value(0);
-    const id = anim.addListener(({ value: v }) => setValue(Math.round(v)));
+    const id = anim.addListener(({ value: v }: { value: number }) => setValue(Math.round(v)));
     Animated.timing(anim, {
       toValue: target,
       duration,

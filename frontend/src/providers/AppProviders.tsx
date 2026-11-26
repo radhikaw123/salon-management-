@@ -1,20 +1,35 @@
 import React, { ReactNode } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import { StatusBar } from 'expo-status-bar';
 
-export default function Providers({ children }: { children: ReactNode }) {
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 2,
+      gcTime: 1000 * 60 * 30,
+      retry: 2,
+      refetchOnWindowFocus: true,
+    },
+  },
+});
+
+interface AppProvidersProps {
+  children: ReactNode;
+}
+
+export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
     <SafeAreaProvider>
-<<<<<<< HEAD:frontend/src/providers/AppProviders.tsx
       <QueryClientProvider client={queryClient}>
         <NavigationContainer>
           <StatusBar style="dark" />
           {children}
         </NavigationContainer>
       </QueryClientProvider>
-=======
-      <NavigationContainer>{children}</NavigationContainer>
->>>>>>> e4f9cff (Updated project changes):frontend/src/app/providers.tsx
     </SafeAreaProvider>
   );
-}
+};
+
+export default AppProviders;

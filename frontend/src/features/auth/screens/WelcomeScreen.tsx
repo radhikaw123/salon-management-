@@ -6,9 +6,9 @@ import {
   Pressable,
   StyleSheet,
   StatusBar,
+  SafeAreaView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -53,7 +53,7 @@ export function WelcomeScreen({ navigation }: Props) {
             accessibilityRole="button"
             accessibilityLabel="Get started"
             onPress={() => navigation.navigate('SignUp')}
-            style={({ pressed }) => [styles.cta, pressed && styles.pressed]}
+            style={({ pressed }: { pressed: boolean }) => [styles.cta, pressed && styles.pressed]}
           >
             <Text style={styles.ctaText}>Get Started</Text>
             <Feather name="arrow-right" size={24} color={brand.white} style={styles.arrow} />

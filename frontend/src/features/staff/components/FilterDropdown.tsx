@@ -29,7 +29,7 @@ const ITEM_H = 48;
 
 // A chip that opens an option list floating over the page, so nothing below it moves.
 export function FilterDropdown({ label, options, value, onSelect, icon, active }: Props) {
-  const ref = useRef<View>(null);
+  const ref = useRef<any>(null);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
   const { height: screenH } = useWindowDimensions();
 
@@ -39,7 +39,7 @@ export function FilterDropdown({ label, options, value, onSelect, icon, active }
       close();
       return;
     }
-    ref.current?.measureInWindow((x, y, w, h) => setAnchor({ x, y, w, h }));
+    ref.current?.measureInWindow((x: number, y: number, w: number, h: number) => setAnchor({ x, y, w, h }));
   };
 
   // open below the chip, or above it when there is not enough room

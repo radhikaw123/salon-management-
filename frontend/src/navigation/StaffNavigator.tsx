@@ -1,17 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-<<<<<<< HEAD
-import { View, Text, StyleSheet, Button } from 'react-native';
-import { StaffTabParamList } from './types';
-import { colors, typography } from '../shared/theme';
-import { useAuthStore } from '../shared/store/authStore';
-=======
 import { Feather } from '@expo/vector-icons';
 import type { StaffTabParamList } from './types';
 import { GradientTabBar } from '@/shared/components/GradientTabBar';
 import { MyCustomersScreen } from '@/features/staff/screens/MyCustomersScreen';
 import { DailyEarningsScreen } from '@/features/staff/screens/DailyEarningsScreen';
->>>>>>> e4f9cff (Updated project changes)
 
 const Tab = createBottomTabNavigator<StaffTabParamList>();
 
