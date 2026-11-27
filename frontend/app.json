@@ -23,7 +23,8 @@
       }
     },
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-image"
     ],
     "extra": {
       "apiUrl": "http://10.0.2.2:5000/v1"
