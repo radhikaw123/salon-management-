@@ -7,20 +7,6 @@
     "lib": ["esnext"],
     "jsx": "react-native",
     "strict": true,
-<<<<<<< HEAD
-    "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    }
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ]
-=======
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
@@ -29,5 +15,4 @@
     "paths": { "@/*": ["./src/*"] }
   },
   "include": ["**/*.ts", "**/*.tsx"]
->>>>>>> e4f9cff (Updated project changes)
 }

@@ -5,6 +5,8 @@ export type RootStackParamList = {
   SignUp: undefined;
   Login: { role?: LoginRole } | undefined;
   StaffTabs: undefined;
+  OwnerTabs: undefined;
+  CustomerVisits: { customerId: string };
 };
 
 export type StaffTabParamList = {

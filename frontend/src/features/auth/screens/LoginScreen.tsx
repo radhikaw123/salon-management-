@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { colors, spacing, typography, borderRadius } from '../../../shared/theme';
-import { useAuthStore } from '../../../shared/store/authStore';
-=======
 import React, { useState } from 'react';
 import {
   View,
@@ -23,13 +17,12 @@ import { TextField } from '@/shared/components/TextField';
 import { GradientButton } from '@/shared/components/GradientButton';
 import { AuthHero } from '@/shared/components/AuthHero';
 import { loginFormSchema, LoginFormValues } from '../schemas/login.schema';
->>>>>>> e4f9cff (Updated project changes)
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 type Errors = Partial<Record<keyof LoginFormValues, string>>;
 
 const TITLES: Record<LoginRole, string> = {
-  owner: 'Welcome Back',
+  owner: 'Owner Login',
   reception: 'Reception',
   staff: 'Staff',
 };
@@ -60,8 +53,10 @@ export function LoginScreen({ navigation, route }: Props) {
     console.log('Login', { ...result.data, role, remember });
     // Temporary: no API yet, so a staff login goes straight to the staff app
     if (role === 'staff') {
-      navigation.reset({ index: 0, routes: [{ name: 'StaffTabs' }] });
-    }
+  navigation.reset({ index: 0, routes: [{ name: 'StaffTabs' }] });
+} else if (role === 'owner') {
+  navigation.reset({ index: 0, routes: [{ name: 'OwnerTabs' }] });
+}
   };
 
   return (

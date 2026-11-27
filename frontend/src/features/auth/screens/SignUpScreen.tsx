@@ -51,8 +51,8 @@ export function SignUpScreen({ navigation }: Props) {
       return;
     }
     setErrors({});
-    // TODO: call sign-up API with result.data, then navigate
-    console.log('Sign up', result.data);
+    // Replace this demo transition with the sign-up API result when it is available.
+    navigation.reset({ index: 0, routes: [{ name: 'OwnerTabs' }] });
   };
 
   return (

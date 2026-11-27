@@ -1,20 +1,15 @@
-import React, { ReactNode } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { ReactNode, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-export default function Providers({ children }: { children: ReactNode }) {
+export function AppProviders({ children }: { children: ReactNode }) {
+  const [client] = useState(() => new QueryClient());
   return (
-    <SafeAreaProvider>
-<<<<<<< HEAD:frontend/src/providers/AppProviders.tsx
-      <QueryClientProvider client={queryClient}>
-        <NavigationContainer>
-          <StatusBar style="dark" />
-          {children}
-        </NavigationContainer>
-      </QueryClientProvider>
-=======
-      <NavigationContainer>{children}</NavigationContainer>
->>>>>>> e4f9cff (Updated project changes):frontend/src/app/providers.tsx
-    </SafeAreaProvider>
+    <QueryClientProvider client={client}>
+      <SafeAreaProvider>
+        <NavigationContainer>{children}</NavigationContainer>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }

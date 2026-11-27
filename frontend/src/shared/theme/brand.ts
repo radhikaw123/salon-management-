@@ -18,12 +18,8 @@ export const brand = {
 } as const;
 
 export const gradients = {
-  // Buttons, toggle, bottom tab bar (left to right)
   button: [brand.rose, brand.purple, brand.plumDeep],
-  // Behind the logo (use with locations [0.2, 1])
   logo: [brand.logoFrom, brand.logoTo],
-  // "Salonova" wordmark text (use with locations [0.2, 1])
   wordmark: [brand.wordmarkFrom, brand.wordmarkTo],
-  // Big page headings such as "My Customers"
   heading: [brand.rose, brand.purple],
 } as const;
