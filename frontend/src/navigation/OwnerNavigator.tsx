@@ -1,8 +1,9 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, StyleSheet, Platform } from 'react-native';
+import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { View, Text, StyleSheet, Platform, Pressable } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, spacing } from '../shared/theme';
+import { colors, radius } from '../shared/theme';
 import { DashboardScreen } from '../features/analytics/screens/DashboardScreen';
 import { ServicesScreen } from '../features/services/screens/ServicesScreen';
 import { StaffScreen } from '../features/staff/screens/StaffScreen';
@@ -10,18 +11,22 @@ import { FinanceScreen } from '../features/analytics/screens/FinanceScreen';
 
 const Tab = createBottomTabNavigator();
 
-export const OwnerNavigator = () => {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarActiveTintColor: colors.white,
-        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.45)',
-        tabBarStyle: styles.tabBar,
-        tabBarLabelStyle: styles.tabBarLabel,
-        tabBarIcon: ({ color, focused }) => {
-          let iconName: keyof typeof Ionicons.glyphMap = 'grid-outline';
+// Luxury horizontal gradient matching Figma: Terracotta Rose -> Purple -> Deep Plum
+const TAB_BAR_GRADIENT = ['#BA5C63', '#7A3273', '#3E104B', '#22062C'] as const;
 
+const CustomOwnerTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
+  return (
+    <View style={styles.barOuter} pointerEvents="box-none">
+      <LinearGradient
+        colors={TAB_BAR_GRADIENT}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={styles.tabBar}
+      >
+        {state.routes.map((route, index) => {
+          const focused = state.index === index;
+
+          let iconName: keyof typeof Ionicons.glyphMap = 'grid-outline';
           if (route.name === 'Dashboard') {
             iconName = focused ? 'grid' : 'grid-outline';
           } else if (route.name === 'Services') {
@@ -32,13 +37,48 @@ export const OwnerNavigator = () => {
             iconName = focused ? 'wallet' : 'wallet-outline';
           }
 
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (!focused && !event.defaultPrevented) {
+              navigation.navigate({ name: route.name, merge: true } as never);
+            }
+          };
+
+          const tintColor = focused ? colors.white : 'rgba(255, 255, 255, 0.45)';
+
           return (
-            <View style={[styles.iconWrapper, focused && styles.iconWrapperActive]}>
-              <Ionicons name={iconName} size={18} color={color} />
-            </View>
+            <Pressable
+              key={route.key}
+              onPress={onPress}
+              accessibilityRole="button"
+              accessibilityState={focused ? { selected: true } : {}}
+              style={styles.tabItem}
+            >
+              <View style={[styles.pill, focused && styles.pillActive]}>
+                <Ionicons name={iconName} size={18} color={tintColor} />
+                <Text style={[styles.tabLabel, { color: tintColor }]}>
+                  {route.name}
+                </Text>
+                {focused && <View style={styles.activeIndicatorDash} />}
+              </View>
+            </Pressable>
           );
-        },
-      })}
+        })}
+      </LinearGradient>
+    </View>
+  );
+};
+
+export const OwnerNavigator = () => {
+  return (
+    <Tab.Navigator
+      tabBar={(props) => <CustomOwnerTabBar {...props} />}
+      screenOptions={{ headerShown: false }}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Services" component={ServicesScreen} />
@@ -49,36 +89,53 @@ export const OwnerNavigator = () => {
 };
 
 const styles = StyleSheet.create({
-  tabBar: {
+  barOuter: {
     position: 'absolute',
     bottom: Platform.OS === 'ios' ? 24 : 16,
-    left: 20,
-    right: 20,
+    left: 18,
+    right: 18,
+  },
+  tabBar: {
+    flexDirection: 'row',
     height: 64,
     borderRadius: radius.pill,
-    backgroundColor: colors.plumDeep,
-    borderTopWidth: 0,
-    elevation: 8,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingHorizontal: 6,
     shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    paddingBottom: 6,
-    paddingTop: 6,
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 6 },
+    shadowRadius: 12,
+    elevation: 8,
   },
-  tabBarLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-    marginTop: 2,
-  },
-  iconWrapper: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+  tabItem: {
+    flex: 1,
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  iconWrapperActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  pill: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    minWidth: 64,
+  },
+  pillActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+  },
+  tabLabel: {
+    fontSize: 10.5,
+    fontWeight: '600',
+    marginTop: 2,
+    letterSpacing: -0.2,
+  },
+  activeIndicatorDash: {
+    width: 14,
+    height: 2.5,
+    borderRadius: 2,
+    backgroundColor: colors.white,
+    marginTop: 2.5,
   },
 });
