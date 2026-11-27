@@ -1,7 +1,15 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Image, Animated, Easing, StyleSheet, StatusBar } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import {
+  Animated,
+  Easing,
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  StatusBar,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../../navigation/types';

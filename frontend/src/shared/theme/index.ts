@@ -1,6 +1,6 @@
 // src/shared/theme/index.ts
 // Salonova brand palette + fonts (used by the welcome / sign-up screens)
-export * from './brand';
+export { brand } from './brand';
 export * from './fonts';
 
 export const colors = {
@@ -43,6 +43,9 @@ export const gradients = {
   heroAccent: [colors.plumDeep, colors.purple, colors.rose],
   cardDark: ['#2B0A3B', '#4D1D5E'],
   tabBar: ['#2B0A3B', '#3E1552', '#54206E'],
+  button: [colors.rose, colors.purple, colors.plumDeep] as readonly [string, string, ...string[]],
+  wordmark: ['#26162D', '#761AA1'] as readonly [string, string, ...string[]],
+  heading: [colors.rose, colors.purple] as readonly [string, string, ...string[]],
 } as const;
 
 export const spacing = {
@@ -79,3 +82,7 @@ export const typography = {
   caption: { fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
   captionBold: { fontSize: 12, fontWeight: '600' as const, lineHeight: 16 },
 };
+
+
+
+

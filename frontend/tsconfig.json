@@ -7,12 +7,16 @@
     "lib": ["esnext"],
     "jsx": "react-native",
     "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "noEmit": true,
-    "paths": { "@/*": ["./src/*"] }
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ]
 }

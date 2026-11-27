@@ -20,16 +20,16 @@ type Props = TextInputProps & {
 const BORDER = 1.5;
 
 export function TextField({ label, error, containerStyle, style, ...rest }: Props) {
-  const borderColors: readonly [string, string, ...string[]] = error
+  const borderColors = error
     ? [brand.danger, brand.danger]
-    : [...gradients.button];
+    : gradients.button;
 
   return (
     <View style={[styles.wrap, containerStyle]}>
       {/* Gradient border + soft shadow */}
       <View style={styles.shadow}>
         <LinearGradient
-          colors={borderColors}
+          colors={borderColors as any}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
           style={styles.border}

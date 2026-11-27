@@ -17,11 +17,11 @@ export function PressableScale({ style, scaleTo = 0.97, onPressIn, onPressOut, .
   return (
     <AnimatedPressable
       {...rest}
-      onPressIn={(e) => {
+      onPressIn={(e: any) => {
         spring(scaleTo);
         onPressIn?.(e);
       }}
-      onPressOut={(e) => {
+      onPressOut={(e: any) => {
         spring(1);
         onPressOut?.(e);
       }}

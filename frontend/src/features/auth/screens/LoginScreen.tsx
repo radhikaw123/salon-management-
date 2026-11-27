@@ -51,7 +51,7 @@ export function LoginScreen({ navigation, route }: Props) {
     setErrors({});
     // TODO: call login API with { ...result.data, role, remember }
     console.log('Login', { ...result.data, role, remember });
-    // Temporary: no API yet, so a staff login goes straight to the staff app
+    // Temporary: no API yet, so navigate directly based on role
     if (role === 'staff') {
   navigation.reset({ index: 0, routes: [{ name: 'StaffTabs' }] });
 } else if (role === 'owner') {
