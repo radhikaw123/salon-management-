@@ -128,9 +128,15 @@ export const mockCategories: ServiceCategory[] = [
 ];
 
 export const mockServicesList: ServiceItem[] = [
-  // 10 Hair Services
-  { id: 'srv_h1', name: 'Signature Balayage', category: 'Hair', duration: '2h 30m', price: 3800, popular: true },
-  { id: 'srv_h2', name: 'Relaxing Head Spa', category: 'Hair', duration: '50m', price: 1800, popular: true },
+  // Featured / Image 3 Services
+  { id: 'srv_1', name: 'Signature Balayage', category: 'Hair', duration: '2h 30m', price: 3800, popular: true },
+  { id: 'srv_2', name: 'Hydra-glow Facial', category: 'Skin & Facial', duration: '1h 15m', price: 2400, popular: true },
+  { id: 'srv_3', name: 'Gel Manicure', category: 'Nails', duration: '45m', price: 1100, popular: false },
+  { id: 'srv_4', name: 'Bridal Makeup', category: 'Makeup', duration: '2h', price: 9500, popular: false },
+  { id: 'srv_5', name: 'Lash Lift & Tint', category: 'Lashes & Brows', duration: '1h', price: 1700, popular: false },
+  { id: 'srv_6', name: 'Relaxing Head Spa', category: 'Spa & Body', duration: '50m', price: 1900, popular: false },
+
+  // Remaining Hair Services
   { id: 'srv_h3', name: 'Keratin Smoothening Treatment', category: 'Hair', duration: '2h', price: 4500, popular: true },
   { id: 'srv_h4', name: "Classic Women's Haircut & Blowdry", category: 'Hair', duration: '45m', price: 1200, popular: true },
   { id: 'srv_h5', name: 'Global Hair Colour & Gloss', category: 'Hair', duration: '1h 45m', price: 3200, popular: false },
@@ -140,8 +146,7 @@ export const mockServicesList: ServiceItem[] = [
   { id: 'srv_h9', name: 'Moroccan Oil Intense Hydration', category: 'Hair', duration: '1h', price: 2400, popular: false },
   { id: 'srv_h10', name: 'Brazilian Blowout Anti-Frizz', category: 'Hair', duration: '2h 30m', price: 5000, popular: false },
 
-  // 12 Skin & Facial Services
-  { id: 'srv_s1', name: 'Hydra-glow Facial', category: 'Skin & Facial', duration: '1h 15m', price: 2600, popular: true },
+  // Remaining Skin & Facial Services
   { id: 'srv_s2', name: '24K Gold Radiance Treatment', category: 'Skin & Facial', duration: '1h 30m', price: 3500, popular: true },
   { id: 'srv_s3', name: 'Deep Pore Charcoal Detox', category: 'Skin & Facial', duration: '50m', price: 1800, popular: false },
   { id: 'srv_s4', name: 'Vitamin C Collagen Boost Facial', category: 'Skin & Facial', duration: '1h 15m', price: 2800, popular: false },
@@ -154,23 +159,20 @@ export const mockServicesList: ServiceItem[] = [
   { id: 'srv_s11', name: "Men's Energizing Skin Revitalizer", category: 'Skin & Facial', duration: '45m', price: 1900, popular: false },
   { id: 'srv_s12', name: 'Acne Defense & Calming Treatment', category: 'Skin & Facial', duration: '1h', price: 2500, popular: false },
 
-  // Nails
-  { id: 'srv_n1', name: 'Gel Manicure', category: 'Nails', duration: '45m', price: 1100, popular: true },
+  // Remaining Nails
   { id: 'srv_n2', name: 'Acrylic Nail Extensions', category: 'Nails', duration: '1h 30m', price: 2500, popular: true },
   { id: 'srv_n3', name: 'Classic Spa Pedicure', category: 'Nails', duration: '1h', price: 1400, popular: false },
   { id: 'srv_n4', name: 'Chrome Mirror Finish Art', category: 'Nails', duration: '30m', price: 800, popular: false },
 
-  // Makeup
-  { id: 'srv_m1', name: 'Bridal Makeup', category: 'Makeup', duration: '2h', price: 5500, popular: true },
+  // Remaining Makeup
   { id: 'srv_m2', name: 'Airbrush Party Makeup', category: 'Makeup', duration: '1h 15m', price: 3200, popular: true },
   { id: 'srv_m3', name: 'Subtle Day Glam & Hairstyling', category: 'Makeup', duration: '1h', price: 2200, popular: false },
 
-  // Lashes & Brows
-  { id: 'srv_l1', name: 'Lash Lift & Tint', category: 'Lashes & Brows', duration: '1h', price: 1700, popular: true },
+  // Remaining Lashes & Brows
   { id: 'srv_l2', name: 'Microblading Brow Sculpt', category: 'Lashes & Brows', duration: '1h 45m', price: 4800, popular: false },
   { id: 'srv_l3', name: 'Russian Volume Lash Extensions', category: 'Lashes & Brows', duration: '1h 30m', price: 3400, popular: false },
 
-  // Spa & Body
+  // Remaining Spa & Body
   { id: 'srv_b1', name: 'Aromatherapy Full Body Massage', category: 'Spa & Body', duration: '1h 15m', price: 2800, popular: true },
   { id: 'srv_b2', name: 'Swedish Muscle Relief Therapy', category: 'Spa & Body', duration: '1h', price: 2400, popular: false },
 ];
@@ -191,6 +193,48 @@ export const mockMayaSchedule: DayShift[] = [
   { day: 'Fri', hours: '9:00 AM to 6:00 PM', clients: 6 },
   { day: 'Sat', hours: '9:00 AM to 6:00 PM', clients: 5 },
 ];
+
+export interface StaffCustomerBooking {
+  id: string;
+  clientName: string;
+  serviceName: string;
+  time: string;
+  duration: string;
+  price: number;
+  status: 'Completed' | 'In Progress' | 'Upcoming';
+}
+
+export const mockStaffBookings: Record<string, StaffCustomerBooking[]> = {
+  st_1: [
+    { id: 'sb_1', clientName: 'Ariadna Hurt', serviceName: 'Signature Balayage', time: '10:30 AM', duration: '2h 30m', price: 3800, status: 'Completed' },
+    { id: 'sb_2', clientName: 'Elena Rostova', serviceName: 'Keratin Smoothening', time: '01:15 PM', duration: '2h', price: 4500, status: 'In Progress' },
+    { id: 'sb_3', clientName: 'Ananya Roy', serviceName: "Classic Women's Haircut", time: '03:45 PM', duration: '45m', price: 1200, status: 'Upcoming' },
+    { id: 'sb_4', clientName: 'Simran Patel', serviceName: 'Relaxing Head Spa', time: '04:45 PM', duration: '50m', price: 1800, status: 'Upcoming' },
+    { id: 'sb_5', clientName: 'Pooja Verma', serviceName: 'Global Hair Colour & Gloss', time: '06:00 PM', duration: '1h 45m', price: 3200, status: 'Upcoming' },
+  ],
+  st_2: [
+    { id: 'sb_6', clientName: 'Elena Rostova', serviceName: 'Hydra-glow Facial', time: '11:00 AM', duration: '1h 15m', price: 2600, status: 'Completed' },
+    { id: 'sb_7', clientName: 'Natasha Mehra', serviceName: '24K Gold Radiance Treatment', time: '01:30 PM', duration: '1h 30m', price: 3500, status: 'In Progress' },
+    { id: 'sb_8', clientName: 'Ritika Sen', serviceName: 'Korean Glass Skin Facial', time: '03:30 PM', duration: '1h 20m', price: 3800, status: 'Upcoming' },
+    { id: 'sb_9', clientName: 'Diya Kapoor', serviceName: 'Deep Pore Charcoal Detox', time: '05:15 PM', duration: '50m', price: 1800, status: 'Upcoming' },
+  ],
+  st_3: [
+    { id: 'sb_10', clientName: 'Kavita Reddy', serviceName: 'Gel Manicure', time: '10:00 AM', duration: '45m', price: 1100, status: 'Completed' },
+    { id: 'sb_11', clientName: 'Meera Nair', serviceName: 'Acrylic Nail Extensions', time: '12:30 PM', duration: '1h 30m', price: 2500, status: 'In Progress' },
+    { id: 'sb_12', clientName: 'Zoya Khan', serviceName: 'Classic Spa Pedicure', time: '03:00 PM', duration: '1h', price: 1400, status: 'Upcoming' },
+    { id: 'sb_13', clientName: 'Tanya Joshi', serviceName: 'Chrome Mirror Finish Art', time: '04:30 PM', duration: '30m', price: 800, status: 'Upcoming' },
+  ],
+  st_4: [
+    { id: 'sb_14', clientName: 'Rahul Sharma', serviceName: "Men's Executive Fade & Styling", time: '11:00 AM', duration: '30m', price: 650, status: 'Completed' },
+    { id: 'sb_15', clientName: 'Tanvi Deshmukh', serviceName: 'Root Touch-up & Refresh', time: '02:00 PM', duration: '1h', price: 1600, status: 'In Progress' },
+    { id: 'sb_16', clientName: 'Neha Singh', serviceName: 'Moroccan Oil Intense Hydration', time: '04:00 PM', duration: '1h', price: 2400, status: 'Upcoming' },
+  ],
+  st_5: [
+    { id: 'sb_17', clientName: 'Pooja Verma', serviceName: 'Bridal Makeup Trial', time: '11:30 AM', duration: '2h', price: 5500, status: 'Completed' },
+    { id: 'sb_18', clientName: 'Sunita Kapoor', serviceName: 'Airbrush Party Makeup', time: '03:30 PM', duration: '1h 15m', price: 3200, status: 'Upcoming' },
+    { id: 'sb_19', clientName: 'Radhika Mehta', serviceName: 'Subtle Day Glam & Hairstyling', time: '05:30 PM', duration: '1h', price: 2200, status: 'Upcoming' },
+  ],
+};
 
 export const formatRupee = (val: number): string => {
   return '₹' + val.toLocaleString('en-IN');

@@ -9,15 +9,18 @@ const logoAsset = require('../../../assets/Logo.jpeg');
 interface SalonHeaderProps {
   rightActionIcon?: keyof typeof Ionicons.glyphMap;
   onRightActionPress?: () => void;
+  rightActionVariant?: 'light' | 'dark';
 }
 
 export const SalonHeader: React.FC<SalonHeaderProps> = ({
   rightActionIcon = 'arrow-redo-outline',
   onRightActionPress,
+  rightActionVariant = 'light',
 }) => {
   const insets = useSafeAreaInsets();
   const statusBarHeight = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 0;
   const topPadding = Math.max(insets.top, statusBarHeight, 20) + spacing.sm;
+  const isDark = rightActionVariant === 'dark';
 
   return (
     <View style={[styles.container, { paddingTop: topPadding }]}>
@@ -36,11 +39,18 @@ export const SalonHeader: React.FC<SalonHeaderProps> = ({
       </View>
 
       <TouchableOpacity
-        style={styles.iconCircle}
+        style={[
+          styles.iconCircle,
+          isDark && styles.iconCircleDark,
+        ]}
         activeOpacity={0.8}
         onPress={onRightActionPress}
       >
-        <Ionicons name={rightActionIcon} size={18} color={colors.plumDeep} />
+        <Ionicons
+          name={rightActionIcon}
+          size={18}
+          color={isDark ? colors.white : colors.plumDeep}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -94,5 +104,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  iconCircleDark: {
+    backgroundColor: colors.plumDeep,
+    borderColor: colors.plumDeep,
   },
 });
