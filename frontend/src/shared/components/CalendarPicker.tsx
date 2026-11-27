@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { brand, fonts } from '@/shared/theme';
+import { brand, fonts, useTheme, type AppTheme } from '@/shared/theme';
 
 const WEEK = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const MONTHS = [
@@ -21,6 +21,8 @@ type Props = {
 
 // Simple month calendar (Monday first). Highlights the chosen day and the range.
 export function CalendarPicker({ value, onChange, maxDate, rangeStart, rangeEnd }: Props) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const [view, setView] = useState(() => new Date(value.getFullYear(), value.getMonth(), 1));
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export function CalendarPicker({ value, onChange, maxDate, rangeStart, rangeEnd 
           hitSlop={10}
           onPress={() => setView(new Date(year, month - 1, 1))}
         >
-          <Feather name="chevron-left" size={22} color={brand.plumDeep} />
+          <Feather name="chevron-left" size={22} color={t.text} />
         </Pressable>
         <Text style={styles.month}>{MONTHS[month]} {year}</Text>
         <Pressable
@@ -60,7 +62,7 @@ export function CalendarPicker({ value, onChange, maxDate, rangeStart, rangeEnd 
           disabled={!canGoNext}
           onPress={() => setView(new Date(year, month + 1, 1))}
         >
-          <Feather name="chevron-right" size={22} color={canGoNext ? brand.plumDeep : 'rgba(85,46,81,0.25)'} />
+          <Feather name="chevron-right" size={22} color={canGoNext ? t.text : t.divider} />
         </Pressable>
       </View>
 
@@ -115,24 +117,24 @@ export function CalendarPicker({ value, onChange, maxDate, rangeStart, rangeEnd 
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  month: { fontFamily: fonts.heading, fontSize: 20, color: brand.plumDeep },
+  month: { fontFamily: fonts.heading, fontSize: 20, color: t.text },
   weekRow: { flexDirection: 'row' },
   weekday: {
     flex: 1,
     textAlign: 'center',
     fontFamily: fonts.sansMedium,
     fontSize: 11,
-    color: brand.fieldLabel,
+    color: t.textMuted,
     paddingBottom: 6,
   },
   cell: { flex: 1, height: 42, alignItems: 'center', justifyContent: 'center' },
   day: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  dayInRange: { backgroundColor: 'rgba(104, 51, 124, 0.12)' },
-  dayToday: { borderWidth: 1, borderColor: brand.purple },
+  dayInRange: { backgroundColor: t.accentSoft },
+  dayToday: { borderWidth: 1, borderColor: t.accent },
   daySelected: { backgroundColor: brand.purple, borderWidth: 0 },
-  dayText: { fontFamily: fonts.sansMedium, fontSize: 14, color: brand.plumDeep },
-  dayTextDisabled: { color: 'rgba(85, 46, 81, 0.3)' },
+  dayText: { fontFamily: fonts.sansMedium, fontSize: 14, color: t.text },
+  dayTextDisabled: { color: t.divider },
   dayTextSelected: { color: brand.white },
 });

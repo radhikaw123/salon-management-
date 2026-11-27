@@ -2,6 +2,8 @@
 // Salonova brand palette + fonts (used by the welcome / sign-up screens)
 export { brand } from './brand';
 export * from './fonts';
+export * from './themes';
+export * from './ThemeProvider';
 
 export const colors = {
   plumDeep: '#2B0A3B',

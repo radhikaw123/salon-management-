@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { ScrollView, Text, StyleSheet } from 'react-native';
-import { brand, fonts } from '@/shared/theme';
+import { brand, fonts, useTheme, type AppTheme } from '@/shared/theme';
 import { BottomSheet } from '@/shared/components/BottomSheet';
 import { SheetHeader, SheetSection, SheetRow, sheetContent } from '@/shared/components/SheetParts';
 import { formatDateTime, formatDuration, formatRupees } from '../format';
@@ -11,6 +11,8 @@ type Props = { entry: ServiceEntry | null; onClose: () => void };
 
 // Popup for one completed service (opened from the history list)
 export function ServiceDetailSheet({ entry, onClose }: Props) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   // keep the last entry so the content stays visible while the sheet slides down
   const last = useRef<ServiceEntry | null>(null);
   if (entry) last.current = entry;
@@ -54,7 +56,7 @@ export function ServiceDetailSheet({ entry, onClose }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  note: { fontFamily: fonts.sans, fontSize: 12, color: brand.fieldLabel },
-  notes: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 20, color: brand.fieldLabel },
+const makeStyles = (t: AppTheme) => StyleSheet.create({
+  note: { fontFamily: fonts.sans, fontSize: 12, color: t.textMuted },
+  notes: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 20, color: t.textMuted },
 });

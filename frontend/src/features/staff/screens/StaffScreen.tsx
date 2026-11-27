@@ -5,6 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Modal,
+  TextInput,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,21 +16,69 @@ import { SalonHeader } from '../../../shared/components/SalonHeader';
 import {
   mockStaffDirectory,
   mockMayaSchedule,
+  StaffMember,
 } from '../../../shared/api/mockData';
 
-export const StaffScreen = () => {
+const STAFF_ROLES = [
+  'Senior Stylist',
+  'Skin Specialist',
+  'Nail Artist',
+  'Master Makeup Artist',
+  'Esthetician',
+  'Hair Colorist',
+];
+
+const SHIFT_OPTIONS = [
+  '9:00 AM - 5:00 PM',
+  '10:00 AM - 6:00 PM',
+  '12:00 PM - 8:00 PM',
+];
+
+export const StaffScreen = ({ navigation }: any) => {
   const [activeSegment, setActiveSegment] = useState<'team' | 'schedule'>('team');
   const [expandedStaffId, setExpandedStaffId] = useState<string | null>('st_1');
+  const [staffList, setStaffList] = useState<StaffMember[]>(mockStaffDirectory);
+
+  // Add Staff Modal State
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [nameInput, setNameInput] = useState('');
+  const [roleInput, setRoleInput] = useState(STAFF_ROLES[0]);
+  const [phoneInput, setPhoneInput] = useState('');
+  const [shiftInput, setShiftInput] = useState(SHIFT_OPTIONS[0]);
+  const [commissionInput, setCommissionInput] = useState('20%');
 
   const toggleExpand = (id: string) => {
     setExpandedStaffId(expandedStaffId === id ? null : id);
   };
 
+  const handleAddStaffMember = () => {
+    if (!nameInput.trim()) return;
+
+    const parts = nameInput.trim().split(' ');
+    const initials = parts.length > 1
+      ? (parts[0][0] + parts[1][0]).toUpperCase()
+      : parts[0].slice(0, 2).toUpperCase();
+
+    const newMember: StaffMember = {
+      id: `st_${Date.now()}`,
+      name: nameInput.trim(),
+      role: roleInput,
+      bookingsThisMonth: 0,
+      initials,
+    };
+
+    setStaffList([newMember, ...staffList]);
+    setNameInput('');
+    setPhoneInput('');
+    setIsAddModalOpen(false);
+  };
+
   return (
     <View style={styles.screen}>
       <SalonHeader
-        rightActionIcon="add-outline"
-        onRightActionPress={() => {}}
+        rightActionIcon="add"
+        rightActionVariant="dark"
+        onRightActionPress={() => setIsAddModalOpen(true)}
       />
 
       <ScrollView
@@ -109,19 +160,28 @@ export const StaffScreen = () => {
             <View style={styles.directoryHeaderRow}>
               <View>
                 <Text style={styles.subCaption}>TEAM DIRECTORY</Text>
-                <Text style={styles.subTitle}>12 salon professionals</Text>
+                <Text style={styles.subTitle}>{staffList.length} salon professionals</Text>
               </View>
-              <TouchableOpacity>
-                <Text style={styles.manageRolesLink}>Manage roles</Text>
+              <TouchableOpacity onPress={() => setIsAddModalOpen(true)}>
+                <Text style={styles.manageRolesLink}>+ Add member</Text>
               </TouchableOpacity>
             </View>
 
-            {/* Staff List */}
-            {mockStaffDirectory.map((member) => (
+            {/* Staff List with Navigation to New Bookings Page */}
+            {staffList.map((member) => (
               <TouchableOpacity
                 key={member.id}
                 style={styles.staffRow}
                 activeOpacity={0.7}
+                onPress={() =>
+                  navigation?.navigate('StaffBookingsDetail', {
+                    staffId: member.id,
+                    staffName: member.name,
+                    staffRole: member.role,
+                    initials: member.initials,
+                    totalBookings: member.bookingsThisMonth,
+                  })
+                }
               >
                 <View style={styles.staffAvatar}>
                   <Text style={styles.staffInitials}>{member.initials}</Text>
@@ -208,6 +268,136 @@ export const StaffScreen = () => {
 
         <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* ============================================================ */}
+      {/* MODAL: ADD NEW STAFF MEMBER                                  */}
+      {/* ============================================================ */}
+      <Modal visible={isAddModalOpen} transparent animationType="slide">
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            {/* Header */}
+            <View style={styles.modalHeaderRow}>
+              <View>
+                <Text style={styles.modalEyebrow}>PEOPLE & ONBOARDING</Text>
+                <Text style={styles.modalTitle}>Add team member</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.modalCloseCircle}
+                onPress={() => setIsAddModalOpen(false)}
+              >
+                <Ionicons name="close" size={18} color={colors.plumDeep} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 520 }}>
+              {/* Full Name */}
+              <Text style={styles.inputLabel}>FULL NAME</Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="e.g. Sophia Clark"
+                placeholderTextColor={colors.textMuted}
+                value={nameInput}
+                onChangeText={setNameInput}
+              />
+
+              {/* Role Selection */}
+              <Text style={styles.inputLabel}>SPECIALIZATION / ROLE</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.roleChoiceScroll}
+              >
+                {STAFF_ROLES.map((role) => (
+                  <TouchableOpacity
+                    key={role}
+                    style={[
+                      styles.choicePill,
+                      roleInput === role && styles.choicePillActive,
+                    ]}
+                    onPress={() => setRoleInput(role)}
+                  >
+                    <Text
+                      style={[
+                        styles.choicePillText,
+                        roleInput === role && styles.choicePillTextActive,
+                      ]}
+                    >
+                      {role}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Phone / Contact */}
+              <View style={styles.inputHeaderRow}>
+                <Text style={styles.inputLabel}>PHONE / CONTACT</Text>
+                <Text style={styles.optionalBadge}>optional</Text>
+              </View>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="e.g. +91 98765 43210"
+                placeholderTextColor={colors.textMuted}
+                value={phoneInput}
+                onChangeText={setPhoneInput}
+                keyboardType="phone-pad"
+              />
+
+              {/* Working Shift Timing */}
+              <Text style={styles.inputLabel}>WORKING SHIFT</Text>
+              <View style={styles.chipsRow}>
+                {SHIFT_OPTIONS.map((shift) => (
+                  <TouchableOpacity
+                    key={shift}
+                    style={[
+                      styles.chip,
+                      shiftInput === shift && styles.chipActive,
+                    ]}
+                    onPress={() => setShiftInput(shift)}
+                  >
+                    <Text
+                      style={[
+                        styles.chipText,
+                        shiftInput === shift && styles.chipTextActive,
+                      ]}
+                    >
+                      {shift}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Commission Rate */}
+              <Text style={styles.inputLabel}>COMMISSION RATE</Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="e.g. 20%"
+                placeholderTextColor={colors.textMuted}
+                value={commissionInput}
+                onChangeText={setCommissionInput}
+              />
+
+              {/* Modal Action Buttons */}
+              <View style={styles.modalButtonRow}>
+                <TouchableOpacity
+                  style={styles.btnSecondary}
+                  onPress={() => setIsAddModalOpen(false)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.btnSecondaryText}>Cancel</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.btnPrimary}
+                  onPress={handleAddStaffMember}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.btnPrimaryText}>Add staff member</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -235,21 +425,21 @@ const styles = StyleSheet.create({
   },
   segmentedContainer: {
     flexDirection: 'row',
-    backgroundColor: '#E6DCF0',
+    backgroundColor: '#22062C',
     borderRadius: radius.pill,
     padding: 3,
     marginBottom: spacing.lg,
   },
   segmentTab: {
     flex: 1,
-    paddingVertical: spacing.sm,
+    paddingVertical: 9,
     alignItems: 'center',
     borderRadius: radius.pill,
   },
   segmentTabActive: {
     backgroundColor: colors.surface,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 2,
@@ -257,7 +447,7 @@ const styles = StyleSheet.create({
   segmentText: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.textMuted,
+    color: 'rgba(255, 255, 255, 0.72)',
   },
   segmentTextActive: {
     color: colors.plumDeep,
@@ -458,5 +648,155 @@ const styles = StyleSheet.create({
   shiftClients: {
     fontSize: 11,
     color: colors.textMuted,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalCard: {
+    backgroundColor: '#FAF5EE',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: Platform.OS === 'ios' ? 36 : spacing.xl,
+    maxHeight: '90%',
+  },
+  modalHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: spacing.md,
+  },
+  modalEyebrow: {
+    ...typography.captionTracked,
+    fontSize: 10,
+    color: '#8E685C',
+    marginBottom: 2,
+  },
+  modalTitle: {
+    ...typography.serifH2,
+    fontSize: 22,
+    color: colors.plumDeep,
+  },
+  modalCloseCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.06)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inputLabel: {
+    ...typography.captionTracked,
+    fontSize: 10,
+    color: '#8E685C',
+    marginBottom: 4,
+  },
+  inputHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  optionalBadge: {
+    fontSize: 10,
+    fontStyle: 'italic',
+    color: colors.textMuted,
+  },
+  modalInput: {
+    backgroundColor: '#F2E9DE',
+    borderRadius: radius.input,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    fontSize: 14,
+    color: colors.textPrimary,
+    marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: '#E5D6C7',
+  },
+  roleChoiceScroll: {
+    paddingBottom: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  choicePill: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: 7,
+    borderRadius: radius.pill,
+    backgroundColor: '#F2E9DE',
+    marginRight: spacing.xs,
+    borderWidth: 1,
+    borderColor: '#E5D6C7',
+  },
+  choicePillActive: {
+    backgroundColor: colors.plumDeep,
+    borderColor: colors.plumDeep,
+  },
+  choicePillText: {
+    fontSize: 12,
+    color: colors.plumDeep,
+    fontWeight: '600',
+  },
+  choicePillTextActive: {
+    color: colors.white,
+  },
+  chipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: spacing.md,
+  },
+  chip: {
+    backgroundColor: '#F2E9DE',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: '#E5D6C7',
+  },
+  chipActive: {
+    backgroundColor: colors.plumDeep,
+    borderColor: colors.plumDeep,
+  },
+  chipText: {
+    fontSize: 11,
+    color: colors.plumDeep,
+    fontWeight: '600',
+  },
+  chipTextActive: {
+    color: colors.white,
+  },
+  modalButtonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: spacing.md,
+    gap: 12,
+  },
+  btnSecondary: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: radius.pill,
+    backgroundColor: colors.white,
+    borderWidth: 1.5,
+    borderColor: colors.plumDeep,
+    alignItems: 'center',
+  },
+  btnSecondaryText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.plumDeep,
+  },
+  btnPrimary: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: radius.pill,
+    backgroundColor: colors.plumDeep,
+    alignItems: 'center',
+  },
+  btnPrimaryText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.white,
   },
 });

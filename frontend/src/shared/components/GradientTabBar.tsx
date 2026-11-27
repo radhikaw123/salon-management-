@@ -6,7 +6,9 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { brand, gradients, fonts } from '@/shared/theme';
 
 // Floating bottom bar using the same gradient as the buttons
-export function GradientTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+type Props = BottomTabBarProps & { hidden?: string[] };
+
+export function GradientTabBar({ state, descriptors, navigation, hidden = [] }: Props) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -21,6 +23,7 @@ export function GradientTabBar({ state, descriptors, navigation }: BottomTabBarP
         style={styles.bar}
       >
         {state.routes.map((route, index) => {
+          if (hidden.includes(route.name)) return null;
           const { options } = descriptors[route.key];
           const focused = state.index === index;
           const label =

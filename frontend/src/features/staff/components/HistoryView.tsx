@@ -1,16 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
-import { brand, fonts, spacing } from '@/shared/theme';
+import { brand, fonts, spacing, useTheme, type AppTheme } from '@/shared/theme';
 import { StatusBadge } from '@/shared/components/StatusBadge';
 import { GradientCard } from '@/shared/components/GradientCard';
 import { PillRow } from '@/shared/components/PillRow';
 import { PressableScale } from '@/shared/components/PressableScale';
 import { FadeInView } from '@/shared/components/FadeInView';
+import { LoadMoreButton } from '@/shared/components/LoadMoreButton';
 import { FilterDropdown } from './FilterDropdown';
 import { rangeFor } from '../earnings';
 import { MONTH_NAMES } from '../format';
@@ -21,6 +22,8 @@ import {
   weeklyTrend,
   type ServiceCategory,
 } from '../mock';
+
+const PREVIEW = 3; // services shown before "Load more"
 
 type Filter = 'All services' | ServiceCategory;
 type Period = 'week' | 'month' | 'all';
@@ -49,10 +52,13 @@ function buildMonthOptions() {
 }
 
 export function HistoryView() {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('All services');
   const [period, setPeriod] = useState<Period>('week');
   const [month, setMonth] = useState('all');
+  const [showAll, setShowAll] = useState(false);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const monthOptions = useMemo(buildMonthOptions, []);
@@ -76,6 +82,9 @@ export function HistoryView() {
       .sort((a, b) => b.h.completedAt.localeCompare(a.h.completedAt));
   }, [query, filter, period, month]);
 
+  // changing a filter starts again with the short list
+  useEffect(() => setShowAll(false), [query, filter, period, month]);
+  const visible = showAll ? rows : rows.slice(0, PREVIEW);
   const firstName = staffSummary.staffName.split(' ')[0].toUpperCase();
 
   const filtersOn = query.trim() !== '' || filter !== 'All services' || period !== 'week' || month !== 'all';
@@ -118,12 +127,12 @@ export function HistoryView() {
 
       <FadeInView delay={80}>
         <View style={styles.search}>
-          <Feather name="search" size={18} color={brand.fieldLabel} />
+          <Feather name="search" size={18} color={t.textMuted} />
           <TextInput
             value={query}
             onChangeText={setQuery}
             placeholder="Search customer history"
-            placeholderTextColor={brand.placeholder}
+            placeholderTextColor={t.placeholder}
             style={styles.searchInput}
             autoCorrect={false}
           />
@@ -172,8 +181,11 @@ export function HistoryView() {
       {rows.length === 0 ? (
         <Text style={styles.empty}>No services match these filters</Text>
       ) : (
-        rows.map(({ h, c }, i) => (
-          <FadeInView key={h.id} delay={Math.min(i, 6) * 60}>
+        visible.map(({ h, c }, i) => (
+          <FadeInView
+            key={h.id}
+            delay={Math.min(showAll ? Math.max(i - PREVIEW, 0) : i, 6) * 70}
+          >
             <PressableScale
               accessibilityRole="button"
               accessibilityLabel={`${c.name}, view all visits`}
@@ -195,18 +207,25 @@ export function HistoryView() {
                   <Text style={styles.name}>{c.name}</Text>
                   <Text style={styles.service}>{h.service}</Text>
                 </View>
-                <Feather name="chevron-right" size={20} color={brand.fieldLabel} />
+                <Feather name="chevron-right" size={20} color={t.textMuted} />
               </View>
             </PressableScale>
           </FadeInView>
         ))
       )}
 
+      {rows.length > PREVIEW && (
+        <LoadMoreButton
+          remaining={rows.length - PREVIEW}
+          expanded={showAll}
+          onPress={() => setShowAll((v) => !v)}
+        />
+      )}
     </>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   hero: { marginTop: spacing.md },
   heroContent: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
   heroText: { flex: 1 },
@@ -223,10 +242,10 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     paddingHorizontal: 18,
     borderRadius: 18,
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     boxShadow: '0px 6px 16px rgba(104, 51, 124, 0.12)',
   },
-  searchInput: { flex: 1, fontFamily: fonts.sans, fontSize: 15, color: brand.plumDeep },
+  searchInput: { flex: 1, fontFamily: fonts.sans, fontSize: 15, color: t.text },
   chipRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.md },
   pills: { marginTop: spacing.md },
   resultRow: {
@@ -235,18 +254,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: spacing.md,
   },
-  resultText: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel },
-  reset: { fontFamily: fonts.sansBold, fontSize: 13, color: brand.purple, textDecorationLine: 'underline' },
+  resultText: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted },
+  reset: { fontFamily: fonts.sansBold, fontSize: 13, color: t.accent, textDecorationLine: 'underline' },
   empty: {
     fontFamily: fonts.sans,
     fontSize: 14,
-    color: brand.fieldLabel,
+    color: t.textMuted,
     textAlign: 'center',
     marginTop: spacing.xl,
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     borderRadius: 22,
     overflow: 'hidden',
     marginTop: 14,
@@ -257,6 +276,6 @@ const styles = StyleSheet.create({
   avatar: { width: 84, height: 64, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   initials: { fontFamily: fonts.heading, fontSize: 22, color: brand.white },
   cardText: { flex: 1, gap: 3 },
-  name: { fontFamily: fonts.heading, fontSize: 20, color: brand.plumDeep },
-  service: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel },
+  name: { fontFamily: fonts.heading, fontSize: 20, color: t.text },
+  service: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted },
 });

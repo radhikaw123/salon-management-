@@ -7,11 +7,19 @@ export type RootStackParamList = {
   Login: { role?: LoginRole } | undefined;
   StaffTabs: undefined;
   CustomerVisits: { customerId: string };
+  StaffBookingsDetail: {
+    staffId: string;
+    staffName: string;
+    staffRole: string;
+    initials: string;
+    totalBookings: number;
+  };
 };
 
 export type StaffTabParamList = {
   MyCustomers: undefined;
   DailyEarnings: undefined;
+  Profile: undefined;
 };
 
 export type ReceptionTabParamList = {

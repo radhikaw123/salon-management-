@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   Modal,
   View,
@@ -9,7 +9,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { brand, fonts } from '@/shared/theme';
+import { brand, fonts, useTheme, type AppTheme } from '@/shared/theme';
 import { FilterChip } from './FilterChip';
 
 type IconName = React.ComponentProps<typeof Feather>['name'];
@@ -29,7 +29,9 @@ const ITEM_H = 48;
 
 // A chip that opens an option list floating over the page, so nothing below it moves.
 export function FilterDropdown({ label, options, value, onSelect, icon, active }: Props) {
-  const ref = useRef<any>(null);
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
+  const ref = useRef<React.ComponentRef<typeof View>>(null);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
   const { height: screenH } = useWindowDimensions();
 
@@ -39,7 +41,7 @@ export function FilterDropdown({ label, options, value, onSelect, icon, active }
       close();
       return;
     }
-    ref.current?.measureInWindow((x: number, y: number, w: number, h: number) => setAnchor({ x, y, w, h }));
+    ref.current?.measureInWindow((x, y, w, h) => setAnchor({ x, y, w, h }));
   };
 
   // open below the chip, or above it when there is not enough room
@@ -95,7 +97,7 @@ export function FilterDropdown({ label, options, value, onSelect, icon, active }
                     <Text style={[styles.text, selected && styles.textActive]} numberOfLines={1}>
                       {o.label}
                     </Text>
-                    {selected && <Feather name="check" size={16} color={brand.purple} />}
+                    {selected && <Feather name="check" size={16} color={t.accent} />}
                   </Pressable>
                 );
               })}
@@ -107,13 +109,13 @@ export function FilterDropdown({ label, options, value, onSelect, icon, active }
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   anchor: { flex: 1 },
   menu: {
     position: 'absolute',
     borderRadius: 16,
     overflow: 'hidden',
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     boxShadow: '0px 12px 28px rgba(43, 10, 59, 0.28)',
   },
   item: {
@@ -124,8 +126,8 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 16,
   },
-  itemBorder: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(85, 46, 81, 0.25)' },
-  itemActive: { backgroundColor: 'rgba(104, 51, 124, 0.08)' },
-  text: { flexShrink: 1, fontFamily: fonts.sansMedium, fontSize: 14, color: brand.plumDeep },
-  textActive: { color: brand.purple },
+  itemBorder: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: t.divider },
+  itemActive: { backgroundColor: t.accentSoft },
+  text: { flexShrink: 1, fontFamily: fonts.sansMedium, fontSize: 14, color: t.text },
+  textActive: { color: t.accent },
 });

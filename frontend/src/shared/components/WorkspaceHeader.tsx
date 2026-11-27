@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { brand, gradients, fonts } from '@/shared/theme';
+import { brand, gradients, fonts, useTheme, type AppTheme } from '@/shared/theme';
 import { GradientText } from '@/shared/components/GradientText';
 
 type Props = { caption: string };
 
 // Shared top header for every role: logo, gradient wordmark, role caption
 export function WorkspaceHeader({ caption }: Props) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={styles.row}>
       <LinearGradient
@@ -25,7 +27,7 @@ export function WorkspaceHeader({ caption }: Props) {
       </LinearGradient>
 
       <View>
-        <GradientText colors={gradients.wordmark} locations={[0.2, 1]} style={styles.brand}>
+        <GradientText colors={t.wordmarkGradient} locations={[0.2, 1]} style={styles.brand}>
           Salonova
         </GradientText>
         <Text style={styles.caption}>{caption}</Text>
@@ -34,7 +36,7 @@ export function WorkspaceHeader({ caption }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   logoBg: {
     width: 46,
@@ -49,6 +51,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.sans,
     fontSize: 10,
     letterSpacing: 2,
-    color: brand.fieldLabel,
+    color: t.textMuted,
   },
 });

@@ -3,13 +3,14 @@ import { View, Text, ScrollView, StyleSheet, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { brand, gradients, fonts, spacing } from '@/shared/theme';
+import { brand, gradients, fonts, spacing, useTheme, type AppTheme } from '@/shared/theme';
 import { GradientText } from '@/shared/components/GradientText';
 import { GradientCard } from '@/shared/components/GradientCard';
 import { PillRow } from '@/shared/components/PillRow';
 import { FadeInView } from '@/shared/components/FadeInView';
 import { WorkspaceHeader } from '@/shared/components/WorkspaceHeader';
 import { useCountUp } from '@/shared/hooks/useCountUp';
+import { StaffAvatar } from '../components/StaffAvatar';
 import { EarningsTrend } from '../components/EarningsTrend';
 import { DateRangeSheet } from '../components/DateRangeSheet';
 import {
@@ -41,6 +42,8 @@ const TREND_TITLE: Record<Period, string> = {
 };
 
 function PaymentRow({ label, value, bold = false }: { label: string; value: string; bold?: boolean }) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={styles.payRow}>
       <Text style={styles.payLabel}>{label}</Text>
@@ -50,6 +53,8 @@ function PaymentRow({ label, value, bold = false }: { label: string; value: stri
 }
 
 export function DailyEarningsScreen() {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const insets = useSafeAreaInsets();
   const now = useMemo(() => new Date(), []);
   const [period, setPeriod] = useState<Period>('today');
@@ -82,7 +87,7 @@ export function DailyEarningsScreen() {
 
   return (
     <View style={styles.root}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle={t.statusBar} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.scroll, { paddingTop: insets.top + spacing.sm }]}
@@ -95,20 +100,12 @@ export function DailyEarningsScreen() {
           </Text>
           <View style={styles.titleRow}>
             <View style={styles.titleBox}>
-              <GradientText colors={gradients.heading} style={styles.title}>
+              <GradientText colors={t.headingGradient} style={styles.title}>
                 My Earnings
               </GradientText>
               <Text style={styles.subtitle}>{formatLongDate(now)} · Personal earnings only</Text>
             </View>
-            <LinearGradient
-              colors={gradients.logo}
-              locations={[0.2, 1]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.avatar}
-            >
-              <Text style={styles.avatarText}>{staffSummary.initials}</Text>
-            </LinearGradient>
+            <StaffAvatar />
           </View>
         </FadeInView>
 
@@ -179,12 +176,11 @@ export function DailyEarningsScreen() {
 
             <View style={styles.payDivider} />
             <PaymentRow label="Paid amount" value={formatRupees(paymentSummary.paid)} bold />
-            <PaymentRow label="Pending amount" value={formatRupees(paymentSummary.pending)} bold />
             <PaymentRow label="Last payment" value={paymentSummary.lastPayment} bold />
 
             <View style={styles.payDivider} />
             <View style={styles.viewOnly}>
-              <Feather name="check" size={14} color={brand.purple} />
+              <Feather name="check" size={14} color={t.accent} />
               <Text style={styles.viewOnlyText}>View-only financial record</Text>
             </View>
           </View>
@@ -205,20 +201,20 @@ export function DailyEarningsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: brand.lavender },
+const makeStyles = (t: AppTheme) => StyleSheet.create({
+  root: { flex: 1, backgroundColor: t.bg },
   scroll: { paddingHorizontal: spacing.md, paddingBottom: 140 },
   eyebrow: {
     fontFamily: fonts.sans,
     fontSize: 11,
     letterSpacing: 2,
-    color: brand.fieldLabel,
+    color: t.textMuted,
     marginTop: spacing.md,
   },
   titleRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
   titleBox: { flex: 1 },
   title: { fontFamily: fonts.heading, fontSize: 38, lineHeight: 46 },
-  subtitle: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel, marginTop: 2 },
+  subtitle: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted, marginTop: 2 },
   avatar: {
     width: 52,
     height: 52,
@@ -239,23 +235,23 @@ const styles = StyleSheet.create({
   heroSmallLabel: { fontFamily: fonts.sans, fontSize: 10, letterSpacing: 1.5, color: 'rgba(255,255,255,0.8)' },
   heroSmallValue: { fontFamily: fonts.heading, fontSize: 26, color: brand.white, marginTop: 6 },
   payCard: {
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     borderRadius: 26,
     padding: 20,
     boxShadow: '0px 10px 24px rgba(104, 51, 124, 0.16)',
   },
-  payEyebrow: { fontFamily: fonts.sans, fontSize: 10, letterSpacing: 2, color: brand.fieldLabel },
-  payTotal: { fontFamily: fonts.heading, fontSize: 46, color: brand.plumDeep, marginTop: 10 },
-  payCaption: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel, marginTop: 2 },
+  payEyebrow: { fontFamily: fonts.sans, fontSize: 10, letterSpacing: 2, color: t.textMuted },
+  payTotal: { fontFamily: fonts.heading, fontSize: 46, color: t.text, marginTop: 10 },
+  payCaption: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted, marginTop: 2 },
   payDivider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(85, 46, 81, 0.25)',
+    backgroundColor: t.divider,
     marginVertical: 14,
   },
   payRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 },
-  payLabel: { fontFamily: fonts.sans, fontSize: 14, color: brand.fieldLabel },
-  payValue: { fontFamily: fonts.sans, fontSize: 14, color: brand.plumDeep },
+  payLabel: { fontFamily: fonts.sans, fontSize: 14, color: t.textMuted },
+  payValue: { fontFamily: fonts.sans, fontSize: 14, color: t.text },
   payValueBold: { fontFamily: fonts.sansBold },
   viewOnly: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  viewOnlyText: { fontFamily: fonts.sansMedium, fontSize: 12, color: brand.purple },
+  viewOnlyText: { fontFamily: fonts.sansMedium, fontSize: 12, color: t.accent },
 });

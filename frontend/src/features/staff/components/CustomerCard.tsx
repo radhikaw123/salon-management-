@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
-import { brand, fonts } from '@/shared/theme';
+import { brand, fonts, useTheme, type AppTheme } from '@/shared/theme';
 import { GradientButton } from '@/shared/components/GradientButton';
 import { PressableScale } from '@/shared/components/PressableScale';
 import type { StaffCustomer } from '../mock';
@@ -15,6 +15,8 @@ type Props = {
 };
 
 function Info({ label, value }: { label: string; value: string }) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={styles.info}>
       <Text style={styles.label}>{label}</Text>
@@ -25,6 +27,8 @@ function Info({ label, value }: { label: string; value: string }) {
 
 // Shows only the name. Tap to reveal details and the View button.
 export function CustomerCard({ customer, expanded, onToggle, onView }: Props) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={styles.card}>
       <View style={styles.accent} />
@@ -48,7 +52,7 @@ export function CustomerCard({ customer, expanded, onToggle, onView }: Props) {
           <Feather
             name={expanded ? 'chevron-up' : 'chevron-down'}
             size={20}
-            color={brand.fieldLabel}
+            color={t.textMuted}
           />
         </PressableScale>
 
@@ -76,10 +80,10 @@ export function CustomerCard({ customer, expanded, onToggle, onView }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   card: {
     flexDirection: 'row',
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     borderRadius: 22,
     overflow: 'hidden',
     marginTop: 16,
@@ -96,16 +100,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   initials: { fontFamily: fonts.heading, fontSize: 18, color: brand.white },
-  name: { flex: 1, fontFamily: fonts.heading, fontSize: 20, color: brand.plumDeep },
-  phone: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel, marginTop: 12 },
+  name: { flex: 1, fontFamily: fonts.heading, fontSize: 20, color: t.text },
+  phone: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted, marginTop: 12 },
   divider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(85, 46, 81, 0.25)',
+    backgroundColor: t.divider,
     marginVertical: 12,
   },
   twoCol: { flexDirection: 'row' },
   info: { flex: 1 },
-  label: { fontFamily: fonts.sans, fontSize: 10, letterSpacing: 1.5, color: brand.fieldLabel },
-  value: { fontFamily: fonts.sansBold, fontSize: 15, color: brand.plumDeep, marginTop: 4 },
+  label: { fontFamily: fonts.sans, fontSize: 10, letterSpacing: 1.5, color: t.textMuted },
+  value: { fontFamily: fonts.sansBold, fontSize: 15, color: t.text, marginTop: 4 },
   viewBtn: { marginTop: 16 },
 });

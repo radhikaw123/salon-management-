@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Modal, View, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { brand } from '@/shared/theme';
+import { brand, useTheme, type AppTheme } from '@/shared/theme';
 
 type Props = { visible: boolean; onClose: () => void; children: React.ReactNode };
 
 // Popup that slides up from the bottom. Tap outside to close.
 export function BottomSheet({ visible, onClose, children }: Props) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const insets = useSafeAreaInsets();
   return (
     <Modal
@@ -31,11 +33,11 @@ export function BottomSheet({ visible, onClose, children }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(43, 10, 59, 0.45)' },
   sheet: {
     maxHeight: '90%',
-    backgroundColor: brand.lavender,
+    backgroundColor: t.bg,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: 16,
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 4,
     borderRadius: 2,
-    backgroundColor: 'rgba(85, 46, 81, 0.3)',
+    backgroundColor: t.divider,
     marginBottom: 14,
   },
 });

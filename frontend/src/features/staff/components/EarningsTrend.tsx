@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Pressable, Animated, Easing, StyleSheet, LayoutChangeEvent } from 'react-native';
-import { brand, fonts } from '@/shared/theme';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, Pressable, Animated, Easing, StyleSheet } from 'react-native';
+import { brand, fonts, useTheme, type AppTheme } from '@/shared/theme';
 import { formatRupees } from '../format';
 import type { Bucket } from '../earnings';
 
@@ -17,6 +17,8 @@ type Props = {
 };
 
 function Bar({ value, max, selected, delay }: { value: number; max: number; selected: boolean; delay: number }) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const h = useRef(new Animated.Value(0)).current;
   const target = (max > 0 ? Math.max(value / max, 0.1) : 0.1) * CHART_H;
 
@@ -34,6 +36,8 @@ function Bar({ value, max, selected, delay }: { value: number; max: number; sele
 }
 
 function Tooltip({ bucket, left }: { bucket: Bucket; left: number }) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const v = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(v, { toValue: 1, duration: 180, useNativeDriver: true }).start();
@@ -71,6 +75,8 @@ function Tooltip({ bucket, left }: { bucket: Bucket; left: number }) {
 }
 
 export function EarningsTrend({ buckets, highlightIndex, title, total, servicesCount, averageLabel }: Props) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const [tip, setTip] = useState<number | null>(null);
   const [width, setWidth] = useState(0);
 
@@ -87,7 +93,7 @@ export function EarningsTrend({ buckets, highlightIndex, title, total, servicesC
         <Text style={styles.total}>{formatRupees(total)}</Text>
       </View>
 
-      <View style={styles.chart} onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}>
+      <View style={styles.chart} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
         <View style={styles.bars}>
           {buckets.map((b, i) => (
             <Pressable
@@ -118,35 +124,35 @@ export function EarningsTrend({ buckets, highlightIndex, title, total, servicesC
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   card: {
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     borderRadius: 26,
     padding: 20,
     boxShadow: '0px 10px 24px rgba(104, 51, 124, 0.16)',
   },
-  eyebrow: { fontFamily: fonts.sans, fontSize: 10, letterSpacing: 2, color: brand.fieldLabel },
+  eyebrow: { fontFamily: fonts.sans, fontSize: 10, letterSpacing: 2, color: t.textMuted },
   titleRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 6 },
-  title: { fontFamily: fonts.heading, fontSize: 30, color: brand.plumDeep },
-  total: { fontFamily: fonts.heading, fontSize: 26, color: brand.plumDeep },
+  title: { fontFamily: fonts.heading, fontSize: 30, color: t.text },
+  total: { fontFamily: fonts.heading, fontSize: 26, color: t.text },
   chart: { height: CHART_H, marginTop: 18 },
   bars: { flexDirection: 'row', height: CHART_H },
   col: { flex: 1, justifyContent: 'flex-end', paddingHorizontal: 4 },
   bar: { width: '100%', borderRadius: 14 },
-  barIdle: { backgroundColor: 'rgba(104, 51, 124, 0.12)' },
+  barIdle: { backgroundColor: t.accentSoft },
   barSelected: { backgroundColor: brand.purple },
   labels: { flexDirection: 'row', marginTop: 8 },
-  label: { flex: 1, textAlign: 'center', fontFamily: fonts.sans, fontSize: 11, color: brand.fieldLabel },
-  labelActive: { fontFamily: fonts.sansBold, color: brand.purple },
+  label: { flex: 1, textAlign: 'center', fontFamily: fonts.sans, fontSize: 11, color: t.textMuted },
+  labelActive: { fontFamily: fonts.sansBold, color: t.accent },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 14,
     paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(85, 46, 81, 0.25)',
+    borderTopColor: t.divider,
   },
-  footerText: { fontFamily: fonts.sans, fontSize: 12, color: brand.fieldLabel },
+  footerText: { fontFamily: fonts.sans, fontSize: 12, color: t.textMuted },
   tip: {
     position: 'absolute',
     top: 0,

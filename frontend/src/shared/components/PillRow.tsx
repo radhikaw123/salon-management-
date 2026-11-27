@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { brand, fonts } from '@/shared/theme';
+import { brand, fonts, useTheme, type AppTheme } from '@/shared/theme';
 import { PressableScale } from './PressableScale';
 
 type Option<T extends string> = { key: T; label: string };
@@ -14,6 +14,8 @@ type Props<T extends string> = {
 
 // Horizontal pills: active one is filled with the purple gradient
 export function PillRow<T extends string>({ options, value, onChange }: Props<T>) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <ScrollView
       horizontal
@@ -50,11 +52,11 @@ export function PillRow<T extends string>({ options, value, onChange }: Props<T>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   row: { gap: 10, paddingVertical: 4 },
   pill: { height: 40, paddingHorizontal: 18, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   pillActive: { boxShadow: '0px 6px 14px rgba(104, 51, 124, 0.3)' },
-  pillOutline: { borderWidth: 1, borderColor: brand.fieldLabel, backgroundColor: brand.white },
-  text: { fontFamily: fonts.sansMedium, fontSize: 14, color: brand.plumDeep },
+  pillOutline: { borderWidth: 1, borderColor: t.outline, backgroundColor: t.surface },
+  text: { fontFamily: fonts.sansMedium, fontSize: 14, color: t.text },
   textActive: { color: brand.white },
 });
