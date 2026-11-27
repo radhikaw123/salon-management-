@@ -176,11 +176,11 @@ export const mockServicesList: ServiceItem[] = [
 ];
 
 export const mockStaffDirectory: StaffMember[] = [
-  { id: 'st_1', name: 'Maya Ellis', role: 'Senior Stylist', bookingsThisMonth: 28, initials: 'ME' },
-  { id: 'st_2', name: 'Nora James', role: 'Skin Specialist', bookingsThisMonth: 24, initials: 'NJ' },
-  { id: 'st_3', name: 'Leah Stone', role: 'Nail Artist', bookingsThisMonth: 31, initials: 'LS' },
-  { id: 'st_4', name: 'Ava Morgan', role: 'Stylist', bookingsThisMonth: 19, initials: 'AM' },
-  { id: 'st_5', name: 'Priya Sharma', role: 'Master Makeup Artist', bookingsThisMonth: 34, initials: 'PS' },
+  { id: 'st_1', name: 'Maya Ellis', role: 'Senior Stylist', bookingsThisMonth: 5, initials: 'ME' },
+  { id: 'st_2', name: 'Nora James', role: 'Skin Specialist', bookingsThisMonth: 4, initials: 'NJ' },
+  { id: 'st_3', name: 'Leah Stone', role: 'Nail Artist', bookingsThisMonth: 4, initials: 'LS' },
+  { id: 'st_4', name: 'Ava Morgan', role: 'Stylist', bookingsThisMonth: 3, initials: 'AM' },
+  { id: 'st_5', name: 'Priya Sharma', role: 'Master Makeup Artist', bookingsThisMonth: 3, initials: 'PS' },
 ];
 
 export const mockMayaSchedule: DayShift[] = [
@@ -191,6 +191,48 @@ export const mockMayaSchedule: DayShift[] = [
   { day: 'Fri', hours: '9:00 AM to 6:00 PM', clients: 6 },
   { day: 'Sat', hours: '9:00 AM to 6:00 PM', clients: 5 },
 ];
+
+export interface StaffBookingItem {
+  id: string;
+  clientName: string;
+  serviceName: string;
+  time: string;
+  duration: string;
+  price: number;
+  status: 'Completed' | 'In Progress' | 'Upcoming';
+}
+
+export const mockStaffBookingsMap: Record<string, StaffBookingItem[]> = {
+  st_1: [
+    { id: 'b_1', clientName: 'Ariadna Hurt', serviceName: 'Signature Balayage', time: '10:30 AM', duration: '2h 30m', price: 3800, status: 'Completed' },
+    { id: 'b_2', clientName: 'Elena Rostova', serviceName: 'Keratin Smoothening', time: '01:15 PM', duration: '2h', price: 4500, status: 'In Progress' },
+    { id: 'b_3', clientName: 'Ananya Roy', serviceName: "Classic Women's Haircut", time: '03:45 PM', duration: '45m', price: 1200, status: 'Upcoming' },
+    { id: 'b_4', clientName: 'Simran Patel', serviceName: 'Relaxing Head Spa', time: '04:45 PM', duration: '50m', price: 1800, status: 'Upcoming' },
+    { id: 'b_5', clientName: 'Pooja Verma', serviceName: 'Global Hair Colour & Gloss', time: '06:00 PM', duration: '1h 45m', price: 3200, status: 'Upcoming' },
+  ],
+  st_2: [
+    { id: 'b_6', clientName: 'Elena Rostova', serviceName: 'Hydra-glow Facial', time: '11:00 AM', duration: '1h 15m', price: 2400, status: 'Completed' },
+    { id: 'b_7', clientName: 'Natasha Mehra', serviceName: '24K Gold Radiance Treatment', time: '01:30 PM', duration: '1h 30m', price: 3500, status: 'In Progress' },
+    { id: 'b_8', clientName: 'Ritika Sen', serviceName: 'Korean Glass Skin Facial', time: '03:30 PM', duration: '1h 20m', price: 3800, status: 'Upcoming' },
+    { id: 'b_9', clientName: 'Diya Kapoor', serviceName: 'Deep Pore Charcoal Detox', time: '05:15 PM', duration: '50m', price: 1800, status: 'Upcoming' },
+  ],
+  st_3: [
+    { id: 'b_10', clientName: 'Kavita Reddy', serviceName: 'Gel Manicure', time: '10:00 AM', duration: '45m', price: 1100, status: 'Completed' },
+    { id: 'b_11', clientName: 'Meera Nair', serviceName: 'Acrylic Nail Extensions', time: '12:30 PM', duration: '1h 30m', price: 2500, status: 'In Progress' },
+    { id: 'b_12', clientName: 'Zoya Khan', serviceName: 'Classic Spa Pedicure', time: '03:00 PM', duration: '1h', price: 1400, status: 'Upcoming' },
+    { id: 'b_13', clientName: 'Tanya Joshi', serviceName: 'Chrome Mirror Finish Art', time: '04:30 PM', duration: '30m', price: 800, status: 'Upcoming' },
+  ],
+  st_4: [
+    { id: 'b_14', clientName: 'Rahul Sharma', serviceName: "Men's Executive Fade & Styling", time: '11:00 AM', duration: '30m', price: 650, status: 'Completed' },
+    { id: 'b_15', clientName: 'Tanvi Deshmukh', serviceName: 'Root Touch-up & Refresh', time: '02:00 PM', duration: '1h', price: 1600, status: 'In Progress' },
+    { id: 'b_16', clientName: 'Neha Singh', serviceName: 'Moroccan Oil Intense Hydration', time: '04:00 PM', duration: '1h', price: 2400, status: 'Upcoming' },
+  ],
+  st_5: [
+    { id: 'b_17', clientName: 'Pooja Verma', serviceName: 'Bridal Makeup', time: '11:30 AM', duration: '2h', price: 9500, status: 'Completed' },
+    { id: 'b_18', clientName: 'Sunita Kapoor', serviceName: 'Airbrush Party Makeup', time: '03:30 PM', duration: '1h 15m', price: 3200, status: 'Upcoming' },
+    { id: 'b_19', clientName: 'Radhika Mehta', serviceName: 'Subtle Day Glam & Hairstyling', time: '05:30 PM', duration: '1h', price: 2200, status: 'Upcoming' },
+  ],
+};
 
 export const formatRupee = (val: number): string => {
   return '₹' + val.toLocaleString('en-IN');
