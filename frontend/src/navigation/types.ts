@@ -12,6 +12,7 @@ export type RootStackParamList = {
 export type StaffTabParamList = {
   MyCustomers: undefined;
   DailyEarnings: undefined;
+  Profile: undefined;
 };
 
 export type ReceptionTabParamList = {

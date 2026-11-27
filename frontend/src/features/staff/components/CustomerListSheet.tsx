@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { brand, fonts } from '@/shared/theme';
+import { brand, fonts, useTheme, type AppTheme } from '@/shared/theme';
 import { BottomSheet } from '@/shared/components/BottomSheet';
 import { SheetHeader, SheetSection, sheetContent } from '@/shared/components/SheetParts';
 import { mockAppointments, mockStaffCustomers, type UpcomingAppointment } from '../mock';
@@ -18,6 +18,8 @@ type PersonProps = {
 };
 
 function PersonRow({ initials, name, subtitle, trailing, divider = false }: PersonProps) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={[styles.row, divider && styles.rowDivider]}>
       <LinearGradient
@@ -38,6 +40,8 @@ function PersonRow({ initials, name, subtitle, trailing, divider = false }: Pers
 }
 
 function Appointments({ title, items }: { title: string; items: UpcomingAppointment[] }) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <SheetSection title={`${title} · ${items.length}`}>
       {items.length === 0 ? (
@@ -106,17 +110,17 @@ export function CustomerListSheet({ kind, onClose }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   rowDivider: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(85, 46, 81, 0.25)',
+    borderTopColor: t.divider,
     paddingTop: 12,
   },
   avatar: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   initials: { fontFamily: fonts.heading, fontSize: 16, color: brand.white },
   rowText: { flex: 1 },
-  name: { fontFamily: fonts.heading, fontSize: 18, color: brand.plumDeep },
-  subtitle: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel },
-  trailing: { fontFamily: fonts.sansBold, fontSize: 13, color: brand.purple },
+  name: { fontFamily: fonts.heading, fontSize: 18, color: t.text },
+  subtitle: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted },
+  trailing: { fontFamily: fonts.sansBold, fontSize: 13, color: t.accent },
 });

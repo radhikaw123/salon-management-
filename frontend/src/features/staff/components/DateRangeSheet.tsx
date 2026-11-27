@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { brand, fonts } from '@/shared/theme';
+import { brand, fonts, useTheme, type AppTheme } from '@/shared/theme';
 import { BottomSheet } from '@/shared/components/BottomSheet';
 import { SheetHeader, sheetContent } from '@/shared/components/SheetParts';
 import { CalendarPicker } from '@/shared/components/CalendarPicker';
@@ -19,6 +19,8 @@ type Props = {
 type Field = 'from' | 'to';
 
 function DateField({ label, date, active, onPress }: { label: string; date: Date; active: boolean; onPress: () => void }) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <PressableScale
       accessibilityRole="button"
@@ -34,6 +36,8 @@ function DateField({ label, date, active, onPress }: { label: string; date: Date
 
 // Popup to choose a From and To date for the earnings range
 export function DateRangeSheet({ visible, initial, onApply, onClose }: Props) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const today = new Date();
   const [from, setFrom] = useState(() => addDays(startOfDay(today), -6));
   const [to, setTo] = useState(() => startOfDay(today));
@@ -91,25 +95,25 @@ export function DateRangeSheet({ visible, initial, onApply, onClose }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   fields: { flexDirection: 'row', gap: 12 },
   field: {
     flex: 1,
     padding: 14,
     borderRadius: 16,
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     borderWidth: 1.5,
     borderColor: 'transparent',
     boxShadow: '0px 4px 12px rgba(104, 51, 124, 0.1)',
   },
   fieldActive: { borderColor: brand.purple },
-  fieldLabel: { fontFamily: fonts.sansMedium, fontSize: 10, letterSpacing: 1.5, color: brand.fieldLabel },
-  fieldValue: { fontFamily: fonts.sansBold, fontSize: 16, color: brand.plumDeep, marginTop: 4 },
+  fieldLabel: { fontFamily: fonts.sansMedium, fontSize: 10, letterSpacing: 1.5, color: t.textMuted },
+  fieldValue: { fontFamily: fonts.sansBold, fontSize: 16, color: t.text, marginTop: 4 },
   calendar: {
     padding: 16,
     borderRadius: 20,
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     boxShadow: '0px 4px 12px rgba(104, 51, 124, 0.08)',
   },
-  count: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel, textAlign: 'center' },
+  count: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted, textAlign: 'center' },
 });

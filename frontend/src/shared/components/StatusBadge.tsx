@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { brand, fonts } from '@/shared/theme';
+import { brand, fonts, useTheme, type AppTheme } from '@/shared/theme';
 
 // Small tag such as COMPLETED or ALLOCATED TO YOU (theme purple tint)
 export function StatusBadge({ label }: { label: string }) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={styles.badge}>
       <Text style={styles.text}>{label}</Text>
@@ -11,13 +13,13 @@ export function StatusBadge({ label }: { label: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   badge: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(104, 51, 124, 0.12)',
+    backgroundColor: t.accentSoft,
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
-  text: { fontFamily: fonts.sansBold, fontSize: 9, letterSpacing: 1.2, color: brand.purple },
+  text: { fontFamily: fonts.sansBold, fontSize: 9, letterSpacing: 1.2, color: t.accent },
 });

@@ -5,7 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
-import { brand, fonts, spacing } from '@/shared/theme';
+import { brand, fonts, spacing, useTheme, type AppTheme } from '@/shared/theme';
 import { StatusBadge } from '@/shared/components/StatusBadge';
 import { PressableScale } from '@/shared/components/PressableScale';
 import { FadeInView } from '@/shared/components/FadeInView';
@@ -16,6 +16,8 @@ import { mockHistory, mockStaffCustomers } from '../mock';
 type Props = NativeStackScreenProps<RootStackParamList, 'CustomerVisits'>;
 
 function Stat({ label, value }: { label: string; value: string }) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={styles.stat}>
       <Text style={styles.statLabel}>{label}</Text>
@@ -26,6 +28,8 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 // All visits of one customer. Tap a visit to open the service popup.
 export function CustomerVisitsScreen({ navigation, route }: Props) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const insets = useSafeAreaInsets();
   const { customerId } = route.params;
   const customer = mockStaffCustomers.find((c) => c.id === customerId);
@@ -44,7 +48,7 @@ export function CustomerVisitsScreen({ navigation, route }: Props) {
 
   return (
     <View style={styles.root}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle={t.statusBar} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.scroll, { paddingTop: insets.top + spacing.sm }]}
@@ -55,7 +59,7 @@ export function CustomerVisitsScreen({ navigation, route }: Props) {
           onPress={() => navigation.goBack()}
           style={styles.back}
         >
-          <Feather name="arrow-left" size={20} color={brand.plumDeep} />
+          <Feather name="arrow-left" size={20} color={t.text} />
         </PressableScale>
 
         {!customer ? (
@@ -106,7 +110,7 @@ export function CustomerVisitsScreen({ navigation, route }: Props) {
                           {v.category} · {formatDuration(v.durationMin)}
                         </Text>
                       </View>
-                      <Feather name="chevron-right" size={20} color={brand.fieldLabel} />
+                      <Feather name="chevron-right" size={20} color={t.textMuted} />
                     </View>
                   </PressableScale>
                 </FadeInView>
@@ -121,8 +125,8 @@ export function CustomerVisitsScreen({ navigation, route }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: brand.lavender },
+const makeStyles = (t: AppTheme) => StyleSheet.create({
+  root: { flex: 1, backgroundColor: t.bg },
   scroll: { paddingHorizontal: spacing.md, paddingBottom: 48 },
   back: {
     width: 42,
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
     borderRadius: 21,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     boxShadow: '0px 6px 14px rgba(104, 51, 124, 0.16)',
   },
   header: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: spacing.md },
@@ -144,36 +148,36 @@ const styles = StyleSheet.create({
   },
   avatarText: { fontFamily: fonts.heading, fontSize: 26, color: brand.white },
   headerText: { flex: 1 },
-  eyebrow: { fontFamily: fonts.sans, fontSize: 10, letterSpacing: 2, color: brand.fieldLabel },
-  name: { fontFamily: fonts.heading, fontSize: 30, color: brand.plumDeep, marginTop: 2 },
-  phone: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel },
+  eyebrow: { fontFamily: fonts.sans, fontSize: 10, letterSpacing: 2, color: t.textMuted },
+  name: { fontFamily: fonts.heading, fontSize: 30, color: t.text, marginTop: 2 },
+  phone: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted },
   statRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.md },
   stat: {
     flex: 1,
     padding: 16,
     borderRadius: 20,
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     boxShadow: '0px 8px 20px rgba(104, 51, 124, 0.14)',
   },
-  statLabel: { fontFamily: fonts.sans, fontSize: 10, letterSpacing: 1.5, color: brand.fieldLabel },
-  statValue: { fontFamily: fonts.heading, fontSize: 22, color: brand.plumDeep, marginTop: 6 },
+  statLabel: { fontFamily: fonts.sans, fontSize: 10, letterSpacing: 1.5, color: t.textMuted },
+  statValue: { fontFamily: fonts.heading, fontSize: 22, color: t.text, marginTop: 6 },
   section: {
     fontFamily: fonts.sansMedium,
     fontSize: 11,
     letterSpacing: 2,
-    color: brand.fieldLabel,
+    color: t.textMuted,
     marginTop: spacing.lg,
   },
   empty: {
     fontFamily: fonts.sans,
     fontSize: 14,
-    color: brand.fieldLabel,
+    color: t.textMuted,
     textAlign: 'center',
     marginTop: spacing.xl,
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     borderRadius: 22,
     overflow: 'hidden',
     marginTop: 14,
@@ -182,6 +186,6 @@ const styles = StyleSheet.create({
   accent: { width: 5, backgroundColor: brand.purple },
   cardBody: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16 },
   cardText: { flex: 1, gap: 3 },
-  service: { fontFamily: fonts.heading, fontSize: 21, color: brand.plumDeep },
-  meta: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel },
+  service: { fontFamily: fonts.heading, fontSize: 21, color: t.text },
+  meta: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted },
 });

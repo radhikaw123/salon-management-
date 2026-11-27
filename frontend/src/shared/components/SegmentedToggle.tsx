@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Text, Pressable, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { brand, gradients, fonts } from '@/shared/theme';
+import { brand, gradients, fonts, useTheme, type AppTheme } from '@/shared/theme';
 
 type Option<T extends string> = { key: T; label: string };
 
@@ -13,6 +13,8 @@ type Props<T extends string> = {
 
 // Two-option toggle with the button gradient and a white active pill
 export function SegmentedToggle<T extends string>({ options, value, onChange }: Props<T>) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <LinearGradient
       colors={gradients.button}
@@ -40,11 +42,11 @@ export function SegmentedToggle<T extends string>({ options, value, onChange }: 
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   wrap: { flexDirection: 'row', padding: 4, borderRadius: 22 },
   item: { flex: 1, height: 46, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  itemActive: { backgroundColor: brand.white },
+  itemActive: { backgroundColor: t.surface },
   text: { fontFamily: fonts.sansMedium, fontSize: 15 },
-  textActive: { color: brand.plumDeep },
+  textActive: { color: t.text },
   textInactive: { color: brand.white },
 });

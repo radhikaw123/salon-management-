@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Modal, View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { brand, fonts } from '@/shared/theme';
+import { brand, fonts, useTheme, type AppTheme } from '@/shared/theme';
 import { StatusBadge } from '@/shared/components/StatusBadge';
 import { staffSummary, type StaffCustomer } from '../mock';
 
 type Props = { customer: StaffCustomer | null; onClose: () => void };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -19,6 +21,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 function Row({ label, value }: { label: string; value: string }) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={styles.row}>
       <Text style={styles.rowLabel}>{label}</Text>
@@ -28,15 +32,19 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 function IconRow({ icon, value }: { icon: 'mail' | 'phone'; value: string }) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={styles.row}>
-      <Feather name={icon} size={16} color={brand.fieldLabel} />
+      <Feather name={icon} size={16} color={t.textMuted} />
       <Text style={styles.rowValue}>{value}</Text>
     </View>
   );
 }
 
 export function CustomerDetailSheet({ customer, onClose }: Props) {
+  const t = useTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const insets = useSafeAreaInsets();
 
   return (
@@ -72,7 +80,7 @@ export function CustomerDetailSheet({ customer, onClose }: Props) {
                 <StatusBadge label="ALLOCATED TO YOU" />
                 <Text style={styles.name}>{customer.name}</Text>
                 <View style={styles.phoneRow}>
-                  <Feather name="phone" size={13} color={brand.fieldLabel} />
+                  <Feather name="phone" size={13} color={t.textMuted} />
                   <Text style={styles.phone}>{customer.phone}</Text>
                 </View>
               </View>
@@ -83,7 +91,7 @@ export function CustomerDetailSheet({ customer, onClose }: Props) {
                 onPress={onClose}
                 style={styles.close}
               >
-                <Feather name="x" size={18} color={brand.plumDeep} />
+                <Feather name="x" size={18} color={t.text} />
               </Pressable>
             </View>
 
@@ -129,11 +137,11 @@ export function CustomerDetailSheet({ customer, onClose }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: AppTheme) => StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(43, 10, 59, 0.45)' },
   sheet: {
     maxHeight: '90%',
-    backgroundColor: brand.lavender,
+    backgroundColor: t.bg,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: 16,
@@ -144,39 +152,39 @@ const styles = StyleSheet.create({
     width: 44,
     height: 4,
     borderRadius: 2,
-    backgroundColor: 'rgba(85, 46, 81, 0.3)',
+    backgroundColor: t.divider,
     marginBottom: 14,
   },
   header: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   avatar: { width: 72, height: 72, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontFamily: fonts.heading, fontSize: 26, color: brand.white },
   headerText: { flex: 1, gap: 2 },
-  name: { fontFamily: fonts.heading, fontSize: 28, color: brand.plumDeep },
+  name: { fontFamily: fonts.heading, fontSize: 28, color: t.text },
   phoneRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  phone: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel },
+  phone: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted },
   close: {
     width: 38,
     height: 38,
     borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(104, 51, 124, 0.12)',
+    backgroundColor: t.accentSoft,
   },
   content: { paddingTop: 16, paddingBottom: 8, gap: 12 },
   section: {
-    backgroundColor: brand.white,
+    backgroundColor: t.surface,
     borderRadius: 20,
     padding: 16,
     gap: 12,
     boxShadow: '0px 4px 12px rgba(104, 51, 124, 0.08)',
   },
-  sectionTitle: { fontFamily: fonts.sansMedium, fontSize: 10, letterSpacing: 1.5, color: brand.fieldLabel },
+  sectionTitle: { fontFamily: fonts.sansMedium, fontSize: 10, letterSpacing: 1.5, color: t.textMuted },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
-  rowLabel: { fontFamily: fonts.sans, fontSize: 14, color: brand.fieldLabel },
-  rowValue: { fontFamily: fonts.sansBold, fontSize: 14, color: brand.plumDeep },
-  preference: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel },
-  divider: { height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(85, 46, 81, 0.25)', marginVertical: 10 },
-  prevName: { flex: 1, fontFamily: fonts.sansMedium, fontSize: 14, color: brand.plumDeep },
-  prevDate: { fontFamily: fonts.sans, fontSize: 13, color: brand.fieldLabel },
-  prevStatus: { fontFamily: fonts.sansBold, fontSize: 9, letterSpacing: 1, color: brand.purple },
+  rowLabel: { fontFamily: fonts.sans, fontSize: 14, color: t.textMuted },
+  rowValue: { fontFamily: fonts.sansBold, fontSize: 14, color: t.text },
+  preference: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted },
+  divider: { height: StyleSheet.hairlineWidth, backgroundColor: t.divider, marginVertical: 10 },
+  prevName: { flex: 1, fontFamily: fonts.sansMedium, fontSize: 14, color: t.text },
+  prevDate: { fontFamily: fonts.sans, fontSize: 13, color: t.textMuted },
+  prevStatus: { fontFamily: fonts.sansBold, fontSize: 9, letterSpacing: 1, color: t.accent },
 });
