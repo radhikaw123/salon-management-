@@ -35,10 +35,7 @@ export const colors = {
 } as const;
 
 export const gradients = {
-  button: [colors.rose, colors.purple, colors.plumDeep],
   logo: [colors.logoFrom, colors.logoTo],
-  wordmark: [colors.logoFrom, colors.logoTo],
-  heading: [colors.rose, colors.purple],
   hero: [colors.plumDeep, colors.purple],
   heroAccent: [colors.plumDeep, colors.purple, colors.rose],
   cardDark: ['#2B0A3B', '#4D1D5E'],
