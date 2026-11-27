@@ -230,21 +230,21 @@ const styles = StyleSheet.create({
   },
   segmentedContainer: {
     flexDirection: 'row',
-    backgroundColor: '#E6DCF0',
+    backgroundColor: '#22062C',
     borderRadius: radius.pill,
     padding: 3,
     marginBottom: spacing.lg,
   },
   segmentTab: {
     flex: 1,
-    paddingVertical: spacing.sm,
+    paddingVertical: 9,
     alignItems: 'center',
     borderRadius: radius.pill,
   },
   segmentTabActive: {
     backgroundColor: colors.surface,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 2,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   segmentText: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.textMuted,
+    color: 'rgba(255, 255, 255, 0.72)',
   },
   segmentTextActive: {
     color: colors.plumDeep,

@@ -769,7 +769,7 @@ export const ServicesScreen = () => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F5EFEB',
+    backgroundColor: colors.lavender,
   },
   scrollContent: {
     paddingHorizontal: spacing.lg,
@@ -791,7 +791,7 @@ const styles = StyleSheet.create({
   },
   segmentedContainer: {
     flexDirection: 'row',
-    backgroundColor: '#E4DAD2',
+    backgroundColor: '#22062C',
     borderRadius: radius.pill,
     padding: 3,
     marginBottom: spacing.lg,
@@ -805,7 +805,7 @@ const styles = StyleSheet.create({
   segmentTabActive: {
     backgroundColor: colors.surface,
     shadowColor: '#000',
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 2,
@@ -813,7 +813,7 @@ const styles = StyleSheet.create({
   segmentText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#7A6A60',
+    color: 'rgba(255, 255, 255, 0.72)',
   },
   segmentTextActive: {
     color: colors.plumDeep,

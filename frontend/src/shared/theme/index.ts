@@ -35,10 +35,11 @@ export const colors = {
 
 export const gradients = {
   logo: [colors.logoFrom, colors.logoTo],
-  hero: [colors.plumDeep, colors.purple],
-  heroAccent: [colors.plumDeep, colors.purple, colors.rose],
-  cardDark: ['#2B0A3B', '#4D1D5E'],
-  tabBar: ['#2B0A3B', '#3E1552', '#54206E'],
+  hero: ['#BA5C63', '#7A3273', '#3E104B', '#22062C'] as readonly [string, string, ...string[]],
+  heroAccent: ['#C45B64', '#7D2D68', '#380E46'] as readonly [string, string, ...string[]],
+  cardDark: ['#BA5C63', '#7A3273', '#3E104B', '#22062C'] as readonly [string, string, ...string[]],
+  tabBar: ['#BA5C63', '#7A3273', '#3E104B', '#22062C'] as readonly [string, string, ...string[]],
+  segment: ['#22062C', '#3E104B'] as readonly [string, string, ...string[]],
   button: [colors.rose, colors.purple, colors.plumDeep] as readonly [string, string, ...string[]],
   wordmark: ['#26162D', '#761AA1'] as readonly [string, string, ...string[]],
   heading: [colors.rose, colors.purple] as readonly [string, string, ...string[]],
