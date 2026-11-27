@@ -2,3 +2,5 @@
 - Do not write a high level or overly complex code.
 - Keep implementation clean, direct, and easy to understand.
 - If high-level abstractions or complex patterns are needed, ask the user first before writing.
+- NO automatic git push. Let the user push their own code.
+- NEVER delete any file without asking the user first. Always seek explicit permission.
