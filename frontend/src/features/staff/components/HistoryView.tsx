@@ -2,6 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '@/navigation/types';
 import { brand, fonts, spacing } from '@/shared/theme';
 import { StatusBadge } from '@/shared/components/StatusBadge';
 import { GradientCard } from '@/shared/components/GradientCard';
@@ -9,7 +12,6 @@ import { PillRow } from '@/shared/components/PillRow';
 import { PressableScale } from '@/shared/components/PressableScale';
 import { FadeInView } from '@/shared/components/FadeInView';
 import { FilterDropdown } from './FilterDropdown';
-import { ServiceDetailSheet } from './ServiceDetailSheet';
 import { rangeFor } from '../earnings';
 import { MONTH_NAMES } from '../format';
 import {
@@ -51,7 +53,7 @@ export function HistoryView() {
   const [filter, setFilter] = useState<Filter>('All services');
   const [period, setPeriod] = useState<Period>('week');
   const [month, setMonth] = useState('all');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const monthOptions = useMemo(buildMonthOptions, []);
   const monthLabel = monthOptions.find((o) => o.key === month)?.label ?? 'Date';
@@ -74,8 +76,6 @@ export function HistoryView() {
       .sort((a, b) => b.h.completedAt.localeCompare(a.h.completedAt));
   }, [query, filter, period, month]);
 
-  const selected = rows.find(({ h }) => h.id === selectedId);
-  const entry = selected ? { item: selected.h, customer: selected.c } : null;
   const firstName = staffSummary.staffName.split(' ')[0].toUpperCase();
 
   const filtersOn = query.trim() !== '' || filter !== 'All services' || period !== 'week' || month !== 'all';
@@ -176,8 +176,8 @@ export function HistoryView() {
           <FadeInView key={h.id} delay={Math.min(i, 6) * 60}>
             <PressableScale
               accessibilityRole="button"
-              accessibilityLabel={`${c.name}, ${h.service}, view service details`}
-              onPress={() => setSelectedId(h.id)}
+              accessibilityLabel={`${c.name}, view all visits`}
+              onPress={() => navigation.navigate('CustomerVisits', { customerId: c.id })}
               style={styles.card}
             >
               <View style={styles.accent} />
@@ -202,7 +202,6 @@ export function HistoryView() {
         ))
       )}
 
-      <ServiceDetailSheet entry={entry} onClose={() => setSelectedId(null)} />
     </>
   );
 }

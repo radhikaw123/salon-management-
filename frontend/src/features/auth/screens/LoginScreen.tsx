@@ -22,7 +22,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 type Errors = Partial<Record<keyof LoginFormValues, string>>;
 
 const TITLES: Record<LoginRole, string> = {
-  owner: 'Welcome Back',
+  owner: 'Owner Login',
   reception: 'Reception',
   staff: 'Staff',
 };
@@ -53,10 +53,10 @@ export function LoginScreen({ navigation, route }: Props) {
     console.log('Login', { ...result.data, role, remember });
     // Temporary: no API yet, so navigate directly based on role
     if (role === 'staff') {
-      navigation.reset({ index: 0, routes: [{ name: 'StaffTabs' }] });
-    } else if (role === 'owner') {
-      navigation.reset({ index: 0, routes: [{ name: 'OwnerTabs' }] });
-    }
+  navigation.reset({ index: 0, routes: [{ name: 'StaffTabs' }] });
+} else if (role === 'owner') {
+  navigation.reset({ index: 0, routes: [{ name: 'OwnerTabs' }] });
+}
   };
 
   return (

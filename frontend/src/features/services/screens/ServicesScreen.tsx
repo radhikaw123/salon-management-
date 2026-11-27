@@ -12,7 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, typography, fonts } from '../../../shared/theme';
+import { colors, spacing, radius, typography } from '../../../shared/theme';
 import { SalonHeader } from '../../../shared/components/SalonHeader';
 import {
   mockCategories,
@@ -212,8 +212,7 @@ export const ServicesScreen = () => {
   return (
     <View style={styles.screen}>
       <SalonHeader
-        rightActionIcon="add"
-        rightActionVariant="dark"
+        rightActionIcon="add-outline"
         onRightActionPress={() =>
           activeSegment === 'categories'
             ? handleOpenAddCategory()
@@ -331,27 +330,27 @@ export const ServicesScreen = () => {
           </View>
         ) : (
           /* ============================================================ */
-          /* VIEW 2: SERVICE LIST VIEW (Image 3)                          */
+          /* VIEW 2: SERVICE LIST VIEW                                    */
           /* ============================================================ */
           <View>
-            {/* Search Bar + White Square Add Button */}
+            {/* Search Bar + Add Button */}
             <View style={styles.searchRow}>
               <View style={styles.searchBar}>
-                <Ionicons name="search" size={17} color="#A39388" />
+                <Ionicons name="search" size={16} color={colors.textMuted} />
                 <TextInput
                   style={styles.searchInput}
                   placeholder="Search treatments..."
-                  placeholderTextColor="#A39388"
+                  placeholderTextColor={colors.textMuted}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
                 />
               </View>
               <TouchableOpacity
-                style={styles.addServiceBtnSquare}
+                style={styles.addButton}
                 onPress={handleOpenAddService}
                 activeOpacity={0.8}
               >
-                <Ionicons name="add" size={22} color={colors.plumDeep} />
+                <Ionicons name="add" size={20} color={colors.white} />
               </TouchableOpacity>
             </View>
 
@@ -405,51 +404,42 @@ export const ServicesScreen = () => {
               </Text>
             </View>
 
-            {/* Continuous White Container Card for Services List (Image 3) */}
-            <View style={styles.servicesCardContainer}>
-              {filteredServices.map((service, index) => {
-                const isLast = index === filteredServices.length - 1;
-                return (
-                  <TouchableOpacity
-                    key={service.id}
-                    style={[
-                      styles.serviceRowItem,
-                      !isLast && styles.serviceRowDivider,
-                    ]}
-                    onPress={() => handleOpenEditService(service)}
-                    activeOpacity={0.7}
-                  >
-                    {/* Initial Letter Avatar Box */}
-                    <View style={styles.serviceAvatar}>
-                      <Text style={styles.serviceAvatarText}>
-                        {service.name.charAt(0)}
-                      </Text>
-                    </View>
+            {/* Service Rows */}
+            {filteredServices.map((service) => (
+              <TouchableOpacity
+                key={service.id}
+                style={styles.serviceRow}
+                onPress={() => handleOpenEditService(service)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.serviceAvatar}>
+                  <Text style={styles.serviceAvatarText}>
+                    {service.name.charAt(0)}
+                  </Text>
+                </View>
 
-                    {/* Service Info */}
-                    <View style={styles.serviceInfo}>
-                      <Text style={styles.serviceName}>{service.name}</Text>
-                      <View style={styles.serviceMetaRow}>
-                        <Text style={styles.serviceCategoryText}>{service.category}</Text>
-                        {service.popular && (
-                          <View style={styles.popularBadge}>
-                            <Text style={styles.popularBadgeText}>Popular</Text>
-                          </View>
-                        )}
+                <View style={styles.serviceInfo}>
+                  <Text style={styles.serviceName}>{service.name}</Text>
+                  <View style={styles.serviceMetaRow}>
+                    <Text style={styles.serviceCategoryText}>{service.category}</Text>
+                    {service.popular && (
+                      <View style={styles.popularBadge}>
+                        <Text style={styles.popularBadgeText}>Popular</Text>
                       </View>
-                    </View>
+                    )}
+                  </View>
+                </View>
 
-                    {/* Service Price & Dashes */}
-                    <View style={styles.servicePriceBlock}>
-                      <Text style={styles.servicePrice}>
-                        {formatRupee(service.price)}
-                      </Text>
-                      <Text style={styles.serviceActionDashes}>--</Text>
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
+                <View style={styles.servicePriceBlock}>
+                  <Text style={styles.servicePrice}>
+                    {formatRupee(service.price)}
+                  </Text>
+                  <View style={styles.editActionDots}>
+                    <Ionicons name="ellipsis-horizontal" size={16} color={colors.textMuted} />
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         )}
 
@@ -781,39 +771,37 @@ const styles = StyleSheet.create({
   },
   caption: {
     ...typography.captionTracked,
-    color: '#9C7866',
     marginBottom: spacing.xs,
   },
   title: {
     ...typography.serifH1,
     fontSize: 28,
-    color: '#2B0A3B',
   },
   segmentedContainer: {
     flexDirection: 'row',
-    backgroundColor: '#22062C',
+    backgroundColor: '#E6DCF0',
     borderRadius: radius.pill,
     padding: 3,
     marginBottom: spacing.lg,
   },
   segmentTab: {
     flex: 1,
-    paddingVertical: 9,
+    paddingVertical: spacing.sm,
     alignItems: 'center',
     borderRadius: radius.pill,
   },
   segmentTabActive: {
     backgroundColor: colors.surface,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
+    shadowRadius: 4,
     elevation: 2,
   },
   segmentText: {
     fontSize: 13,
     fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.72)',
+    color: colors.textMuted,
   },
   segmentTextActive: {
     color: colors.plumDeep,
@@ -828,13 +816,11 @@ const styles = StyleSheet.create({
   subCaption: {
     ...typography.captionTracked,
     fontSize: 10,
-    color: '#9C7866',
     marginBottom: 2,
   },
   subTitle: {
     ...typography.serifH2,
     fontSize: 18,
-    color: colors.plumDeep,
   },
   countBadge: {
     fontSize: 12,
@@ -907,14 +893,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surface,
     paddingHorizontal: spacing.md,
-    height: 46,
+    height: 44,
     borderRadius: radius.pill,
     marginRight: spacing.sm,
-    shadowColor: '#000',
-    shadowOpacity: 0.03,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 3,
-    elevation: 1,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   searchInput: {
     flex: 1,
@@ -922,18 +905,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textPrimary,
   },
-  addServiceBtnSquare: {
-    width: 46,
-    height: 46,
-    borderRadius: 16,
-    backgroundColor: colors.surface,
+  addButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.plumDeep,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 3,
-    elevation: 1,
+    shadowColor: colors.plumDeep,
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
   },
   filterScroll: {
     paddingBottom: spacing.sm,
@@ -943,9 +926,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: 7,
     borderRadius: radius.pill,
-    backgroundColor: 'rgba(255,255,255,0.8)',
+    backgroundColor: 'rgba(255,255,255,0.7)',
     borderWidth: 1,
-    borderColor: '#E6DCD2',
+    borderColor: colors.border,
     marginRight: spacing.xs,
   },
   filterPillActive: {
@@ -968,38 +951,27 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textMuted,
   },
-  servicesCardContainer: {
-    backgroundColor: colors.surface,
-    borderRadius: 24,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  serviceRowItem: {
+  serviceRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 14,
-  },
-  serviceRowDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#F5ECE5',
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: radius.card,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   serviceAvatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: '#F6ECE6',
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#F7EDDE',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.md,
   },
   serviceAvatarText: {
-    fontFamily: fonts.headingBold,
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '700',
     color: '#8A583B',
   },
@@ -1009,8 +981,8 @@ const styles = StyleSheet.create({
   serviceName: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1A1A1A',
-    marginBottom: 3,
+    color: colors.plumDeep,
+    marginBottom: 2,
   },
   serviceMetaRow: {
     flexDirection: 'row',
@@ -1018,11 +990,11 @@ const styles = StyleSheet.create({
   },
   serviceCategoryText: {
     fontSize: 12,
-    color: '#8A7A70',
+    color: colors.textMuted,
   },
   popularBadge: {
-    backgroundColor: '#FBEBE4',
-    paddingHorizontal: 7,
+    backgroundColor: '#F3E8DC',
+    paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: radius.pill,
     marginLeft: spacing.xs,
@@ -1030,23 +1002,20 @@ const styles = StyleSheet.create({
   popularBadgeText: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#A06B55',
+    color: '#8A583B',
   },
   servicePriceBlock: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
   },
   servicePrice: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1A1A1A',
+    color: colors.plumDeep,
   },
-  serviceActionDashes: {
-    fontSize: 14,
-    color: '#C2B6AE',
-    fontWeight: '600',
-    letterSpacing: -1,
+  editActionDots: {
+    padding: 4,
   },
   modalBackdrop: {
     flex: 1,
@@ -1160,8 +1129,8 @@ const styles = StyleSheet.create({
   iconSelectCircle: {
     width: 44,
     height: 44,
-    borderRadius: 14,
-    backgroundColor: '#F7EEF5',
+    borderRadius: 22,
+    backgroundColor: '#F2E8DC',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
