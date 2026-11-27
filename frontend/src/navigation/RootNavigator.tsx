@@ -12,7 +12,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const RootNavigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName="OwnerTabs"
+      initialRouteName="Welcome"
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen name="OwnerTabs" component={OwnerNavigator} />
@@ -21,7 +21,6 @@ export const RootNavigator = () => {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="StaffTabs" component={StaffNavigator} />
       <Stack.Screen name="CustomerVisits" component={CustomerVisitsScreen} />
-      <Stack.Screen name="OwnerTabs" component={OwnerNavigator} />
     </Stack.Navigator>
   );
 }
