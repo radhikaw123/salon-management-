@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing } from '../theme';
 
-const logoAsset = require('../../../assets/Logo.jpeg');
+const logoAsset = require('../../../assets/images/logo.png');
 
 interface SalonHeaderProps {
   rightActionIcon?: keyof typeof Ionicons.glyphMap;
